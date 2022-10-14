@@ -3,6 +3,7 @@ import Constants from './Constants';
 import Predicates from './Predicates';
 import Functions from './Functions';
 import Clashes from './Clashes';
+import Constraint from './Constraint';
 
 
 function LanguageSection() {
@@ -13,6 +14,7 @@ function LanguageSection() {
       <Predicates />
       <Functions />
       <Clashes />
+      <Constraint/>
     </div>
   );
 }

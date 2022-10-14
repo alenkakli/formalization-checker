@@ -11,7 +11,7 @@ import {
 
 
 function Solution({ exercise_id, proposition_id, proposition,
-                    value, error, update, evaluate }) {
+                    value, error, update ,  evaluate, user}) {
   return (
     <div className="clearfix mt-4">
       <Form.Group className="clearfix">
@@ -31,7 +31,8 @@ function Solution({ exercise_id, proposition_id, proposition,
           onClick={() => evaluate({
             exercise_id,
             proposition_id,
-            solution: value
+            solution: value,
+            user: user
           })}
         >
           Check

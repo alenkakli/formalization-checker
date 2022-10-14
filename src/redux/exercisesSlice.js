@@ -51,6 +51,10 @@ export const selectExercises = (state) => {
   return state.exercises.exercises;
 };
 
+export const selectPropositions = (state) => {
+  return state.exercises;
+};
+
 export const selectStatus = (state) => {
   return state.exercises.status;
 };

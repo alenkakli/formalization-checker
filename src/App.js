@@ -12,9 +12,16 @@ import ExerciseList from './components/solveExercise/ExerciseList';
 import SolveExercise from './components/solveExercise/SolveExercise';
 import AddExercise from './components/addExercise/AddExercise';
 import { logOut } from './redux/userSlice';
+import AdminRoute from "./components/login/AdminRoute";
+import Exercises from "./components/studentProgress/Exercises";
+import UserSolutionsList from "./components/studentProgress/UserSolutionsList";
+import UsersToExercise from "./components/studentProgress/UsersToExercise";
+import UserList from "./components/addAdmins/UserList";
+import {BASE_NAME} from "./config";
+import {changeStatus} from "./redux/addExerciseSlice";
 
 
-function App({ isLoggedIn, user, logOut }) {
+function App({ isLoggedIn, user, logOut, changeStatus }) {
   let loginInfo = null;
   if (isLoggedIn) {
     loginInfo = (
@@ -36,15 +43,21 @@ function App({ isLoggedIn, user, logOut }) {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={BASE_NAME}>
       <div className="App">
         <Navbar bg="dark" variant="dark" sticky="top">
           <Nav className="mr-auto">
             <Nav.Link className="px-4" as={Link} to="/">
               Home
             </Nav.Link>
-            <Nav.Link className="px-4" as={Link} to="/add">
+            <Nav.Link className="px-4" as={Link} to="/add" onClick={() => changeStatus()}>
               Add
+            </Nav.Link>
+            <Nav.Link className="px-4" as={Link} to="/progress">
+              Student progress
+            </Nav.Link>
+            <Nav.Link className="px-4" as={Link} to="/admins">
+              Admin
             </Nav.Link>
           </Nav>
           <Nav>
@@ -53,14 +66,18 @@ function App({ isLoggedIn, user, logOut }) {
           </Navbar>
         <Container className="my-3">
           <Switch>
-            <Route exact path="/" component={ExerciseList} />
+            <ProtectedRoute exact path="/" component={ExerciseList} />
+            <AdminRoute exact path="/admins" component={UserList} />
+            <AdminRoute exact path="/progress" component={Exercises} />
+            <AdminRoute exact path="/progress/exercise/users" component={UsersToExercise} />
+            <AdminRoute exact path="/progress/exercise/users/solutions" component={UserSolutionsList} />
             <Route exact path="/login" component={LoginForm} />
-            <Route path="/solve/:id" component={SolveExercise} />
+            <ProtectedRoute path="/solve/:id" component={SolveExercise} />
 
-            <ProtectedRoute exact path="/add" component={AddExercise} />
+            <AdminRoute exact path="/add" component={AddExercise}  />
 
             <Route path="*" component={() => {
-              <Alert variant="danger">404 Not Found</Alert>
+              return <Alert variant="danger">404 Not Found</Alert>
             }} />
           </Switch>
         </Container>
@@ -72,10 +89,11 @@ function App({ isLoggedIn, user, logOut }) {
 const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.user.isLoggedIn,
+    isAdmin: state.user.isAdmin,
     user: state.user.user
   };
 };
 
-const mapDispatchToProps = { logOut };
+const mapDispatchToProps = { logOut, changeStatus };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

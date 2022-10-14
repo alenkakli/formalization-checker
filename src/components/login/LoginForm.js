@@ -1,23 +1,25 @@
 import React from 'react';
-import { Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Form, Button, Spinner } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
-  updateUsername, updatePassword, logIn
+  updateUsername, updatePassword, logIn, logInByGithub
 } from '../../redux/userSlice';
+import {CLIENT_ID, REDIRECT} from "../../config";
 
 
 function LoginForm({
   usernameValue, passwordValue, updateUsername, updatePassword,
-  location, isLoggedIn, status, error, logIn
+  location, isLoggedIn, status, error, logIn, logInByGithub
 }) {
 
   if (status === 'loading') {
     return <Spinner animation="border" variant="primary" />;
   }
-
-  if (status === 'failed') {
-    return <Alert variant="danger">{ error }</Alert>;
+  if(window.location.href.match("code")){
+      let code = window.location.href.split("code=")[1];
+      logInByGithub({code: code});
+      return <Redirect to="/" />
   }
 
   if (isLoggedIn) {
@@ -27,6 +29,7 @@ function LoginForm({
       return <Redirect to="/" />
     }
   } else {
+
     return (
       <Form>
         <Form.Group>
@@ -63,6 +66,16 @@ function LoginForm({
         >
           Log in
         </Button>
+        <Button
+          type="submit"
+          onClick={(e) => {
+            e.preventDefault();
+              let url = "https://github.com/login/oauth/authorize?client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT +"&scope=read:user"
+              window.location.replace(url);
+          }}
+        >
+          Log in with Github
+        </Button>
       </Form>
     );
   }
@@ -78,6 +91,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = { updateUsername, updatePassword, logIn };
+const mapDispatchToProps = { updateUsername, updatePassword, logIn, logInByGithub };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);

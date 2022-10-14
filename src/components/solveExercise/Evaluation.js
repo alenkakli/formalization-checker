@@ -6,6 +6,9 @@ import {
   selectEvalStatus,
   selectEvalError
 } from '../../redux/solveExerciseSlice';
+import {
+    getStringDomainAndPredicates,
+} from '../../redux/helpers';
 
 
 function Evaluation({ evaluation, status, error }) {
@@ -45,42 +48,108 @@ const getMessage = (evaluation) => {
           </Alert>
         );
   } else if (evaluation.solutionToFormalization === 'TE'
-      || evaluation.formalizationToSolution === 'TE') {
+      || evaluation.formalizationToSolution === 'TE' || evaluation.solutionToFormalization === 'ME'
+      || evaluation.formalizationToSolution === 'ME') {
         return (
           <Alert variant="warning">
-            Dokazovaču sa nepodarilo zistiť,
+           <p> Dokazovaču sa nepodarilo zistiť,
             či je vaše riešenie správne alebo nesprávne.
-            <br />Na správnosť vášho riešenia sa spýtajte.
-          </Alert>
-        );
-  } else if (evaluation.solutionToFormalization === 'OK'
-      && evaluation.formalizationToSolution === 'WA') {
-        return (
-          <Alert variant="danger">
-            <b>Riešenie je nesprávne.</b>
-            <br />Vieme nájsť konkrétnu štruktúru,
-            v ktorej je hľadaná správna formalizácia pravdivá,
-            ale vaša formalizácia je nepravdivá.
-          </Alert>
-        );
-  } else if (evaluation.solutionToFormalization === 'WA'
-      && evaluation.formalizationToSolution === 'OK') {
-        return (
-          <Alert variant="danger">
-            <b>Riešenie je nesprávne.</b>
-            <br />Vieme nájsť konkrétnu štruktúru,
-            v ktorej je vaša formalizácia pravdivá,
-            ale hľadaná správna formalizácia je nepravdivá.
+               Na správnosť vášho riešenia sa spýtajte.</p>
           </Alert>
         );
   } else {
-    return (
-      <Alert variant="danger">
-        <b>Riešenie je nesprávne.</b>
-        <br />Vieme nájsť konkrétne štruktúry,
-        v ktorých je vaša formalizácia pravdivá,
-        ale hľadaná správna formalizácia je nepravdivá, a naopak.
-      </Alert>
-    );
+      let pom = getStringDomainAndPredicates(evaluation.symbolsFormalizationToSolution, evaluation.domainFormalizationToSolution,
+           evaluation.languageContants);
+      let domainFormToSol = pom[0];
+      let symbolsFormToSol = pom[1];
+
+      pom = getStringDomainAndPredicates(evaluation.symbolsSolutionToFormalization, evaluation.domainSolutionToFormalization,
+           evaluation.languageContants);
+      let domainSolToForm = pom[0];
+      let symbolsSolToForm = pom[1];
+
+      if (evaluation.solutionToFormalization === 'OK'
+          && evaluation.formalizationToSolution === 'WA') {
+          if (evaluation.iFormalizationSolution !== 'null') {
+              return (
+                  <Alert variant="danger">
+                      <b>Riešenie je nesprávne.</b>
+                      <p>Vieme nájsť konkrétnu štruktúru,
+                          v ktorej je hľadaná správna formalizácia pravdivá,
+                          ale vaša formalizácia je nepravdivá.</p>
+
+                      <p>{evaluation.m1}</p>
+                      <p>{domainFormToSol}</p>
+                      {symbolsFormToSol.split("\n").map((i,key) => {
+                          return <div className="p" key={key}>{i}</div>;
+                      })}
+
+
+                      <br/>
+
+
+                  </Alert>
+              );
+          } else {
+              return (
+                  <Alert variant="danger">
+                      <b>Riešenie je nesprávne.</b>
+                      <p>Nepodarilo sa nájsť štruktúru, na vaše riešenie sa radšej opýtajte.</p>
+
+                  </Alert>
+              );
+          }
+      } else if (evaluation.solutionToFormalization === 'WA'
+          && evaluation.formalizationToSolution === 'OK') {
+          if (evaluation.iSolutionToFormalization !== 'null') {
+              return (
+                  <Alert variant="danger">
+                      <b>Riešenie je nesprávne.</b>
+                      <p>Vieme nájsť konkrétnu štruktúru,
+                          v ktorej je vaša formalizácia pravdivá,
+                          ale hľadaná správna formalizácia je nepravdivá.</p>
+                      <p>{evaluation.m2}</p>
+                      <p>{domainSolToForm}</p>
+                      {symbolsSolToForm.split("\n").map((i,key) => {
+                          return <div className="p" key={key}>{i}</div>;
+                      })}
+
+                  </Alert>
+              );
+          } else {
+              return (
+                  <Alert variant="danger">
+                      <b>Riešenie je nesprávne.</b>
+                      <p>Nepodarilo sa nájsť štruktúru, na vaše riešenie sa radšej opýtajte.</p>
+                  </Alert>
+              );
+          }
+      } else {
+          return (
+              <Alert variant="danger">
+                  <b>Riešenie je nesprávne.</b>
+                  <p>Vieme nájsť konkrétne štruktúry,
+                      v ktorých je vaša formalizácia pravdivá,
+                      ale hľadaná správna formalizácia je nepravdivá, a naopak.</p>
+
+                  <p>{evaluation.m2}</p>
+                  <p>{domainSolToForm}</p>
+                  {symbolsSolToForm.split("\n").map((i,key) => {
+                      return <div className="p" key={key}>{i}</div>;
+                  })}
+
+
+                  <p>{evaluation.m1}</p>
+                  <p>{domainFormToSol}</p>
+                  {symbolsFormToSol.split("\n").map((i,key) => {
+                      return <div className="p" key={key}>{i}</div>;
+                  })}
+
+
+              </Alert>
+          );
+      }
+
   }
 };
+

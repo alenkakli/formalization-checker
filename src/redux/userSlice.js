@@ -2,7 +2,9 @@ import {
   createSlice,
   createAsyncThunk
 } from '@reduxjs/toolkit';
-//import { fetchData } from './fetchData';
+import {fetchData} from "./fetchData";
+
+
 
 
 /* async actions */
@@ -10,13 +12,34 @@ import {
 export const logIn = createAsyncThunk(
   'user/logIn',
   async ({ username, password }, { rejectWithValue }) => {
-    if (username === 'abcd' && password === 'abcd') {
-      return {
-        username,
-        jwtToken: username + ' OK'
-      };
-    } else {
-      return null;
+    try {
+      let data = {};
+      data["username"] = username;
+      data["password"] = password;
+      let response = await fetchData(
+          `/api/exercises/logIn`, 'POST', data
+      );
+
+    return response;
+    } catch (err) {
+      console.error(err)
+      return rejectWithValue(err.message);
+    }
+  }
+);
+export const logInByGithub = createAsyncThunk(
+  'user/logInGithub',
+  async ( {code},  { rejectWithValue }) => {
+    try {
+      let data = {};
+      data["code"] = code;
+      let response = await fetchData(
+          `/api/exercises/logIn/github/auth`, 'POST', data
+      );
+      return response;
+    } catch (err) {
+      console.error(err.message)
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -27,6 +50,7 @@ export const userSlice = createSlice({
   name: 'user',
   initialState: {
     isLoggedIn: false,
+    isAdmin: false,
     user: null,
     
     status: 'idle',
@@ -43,11 +67,12 @@ export const userSlice = createSlice({
       state.passwordValue = action.payload;
     },
     logOut: (state) => {
+      localStorage.removeItem("token");
       state.isLoggedIn = false;
       state.user = null;
       state.status = 'idle';
       state.error = '';
-    }
+    },
   },
   extraReducers: {
     [logIn.pending]: (state, action) => {
@@ -58,16 +83,40 @@ export const userSlice = createSlice({
       state.usernameValue = '';
       state.passwordValue = '';
       if (action.payload) {
-        state.user = action.payload;
+        let data = JSON.parse(Buffer.from(action.payload.token.split(".")[1], "base64").toString());
+        state.user = {"username": data.username};
         state.isLoggedIn = true;
+        state.isAdmin = data.isAdmin;
+        localStorage["token"] = action.payload.token
       } else {
-        state.error = 'No such combination of username and password found.';
+        state.error = '';
       }
     },
     [logIn.rejected]: (state, action) => {
       state.status = 'failed';
-      state.error = action.payload;
-    }
+      state.error = 'No such combination of username and password found.';
+    } ,
+    [logInByGithub.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [logInByGithub.fulfilled]: (state, action) => {
+      state.status = 'succeeded';
+      state.usernameValue = '';
+      state.passwordValue = '';
+      if (action.payload) {
+        let data = JSON.parse(Buffer.from(action.payload.token.split(".")[1], "base64").toString());
+        state.user = {"username": data.username};
+        state.isLoggedIn = true;
+        state.isAdmin = data.isAdmin;
+        localStorage["token"] = action.payload.token
+      } else {
+        state.error = '';
+      }
+    },
+    [logInByGithub.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.error = 'No such combination of username and password found.';
+    } ,
   }
 });
 

@@ -5,11 +5,12 @@ import SyntaxError from './SyntaxError';
 import {
   removeFormalization,
   updateFormalization,
-  selectFormalization
+  selectFormalization,
+  updateConstraints,  selectConstraints
 } from '../../redux/addExerciseSlice';
 
 
-function Formalization({ i, j, value, error, remove, update }) {
+function Formalization({ i, j, value, value2, error, error2, remove, update, updateConstraints }) {
   return (
     <div className="clearfix pl-5">
       <Form.Group className="mb-0">
@@ -22,6 +23,18 @@ function Formalization({ i, j, value, error, remove, update }) {
           value={value}
           onChange={(e) => update(e.target.value, i, j)}
         />
+        <SyntaxError value={value} error={error} />
+
+        <Form.Label>
+          {"Preferred model constraints " + (i + 1) + "." + (j + 1) + "(optional)"}
+        </Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter constraints"
+          value={value2}
+          onChange={(e) => updateConstraints(e.target.value, i, j)}
+        />
+        <SyntaxError value={value2} error={error2} />
         <Button
           className="mt-1 float-right"
           variant="outline-danger"
@@ -30,7 +43,6 @@ function Formalization({ i, j, value, error, remove, update }) {
         >
           Remove
         </Button>
-        <SyntaxError value={value} error={error} />
       </Form.Group>
     </div>
   );
@@ -38,15 +50,19 @@ function Formalization({ i, j, value, error, remove, update }) {
 
 const mapStateToProps = (state, ownProps) => {
   const data = selectFormalization(state, ownProps.i, ownProps.j);
+  const data2 = selectConstraints(state, ownProps.i, ownProps.j);
   return {
     value: data.value,
-    error: data.error
+    error: data.error,
+    value2: data2.value,
+    error2: data2.error,
   };
 };
 
 const mapDispatchToProps = {
   remove: removeFormalization,
-  update: updateFormalization
+  update: updateFormalization,
+  updateConstraints
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Formalization);

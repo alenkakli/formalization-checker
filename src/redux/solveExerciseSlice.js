@@ -33,11 +33,11 @@ export const fetchExercise = createAsyncThunk(
 
 export const evaluate = createAsyncThunk(
   'solveExercise/evaluate',
-  async ({ exercise_id, proposition_id, solution }, { rejectWithValue }) => {
+  async ({ exercise_id, proposition_id, solution, user }, { rejectWithValue }) => {
     try {
       let response = await fetchData(
         `/api/exercises/${exercise_id}/${proposition_id}`, 'POST',
-        { solution }
+        { solution, user}
       );
       return response;
     } catch (err) {
@@ -70,7 +70,7 @@ export const solveExerciseSlice = createSlice({
       prepare: (value, id) => {
         return { payload: { value, id } };
       }
-    },
+    }
   },
   extraReducers: {
     [fetchExercise.pending]: (state, action) => {
@@ -88,7 +88,7 @@ export const solveExerciseSlice = createSlice({
           evaluation: null,
 
           status: 'idle',
-          error: null
+          error: null,
         };
       }
     },
@@ -134,15 +134,13 @@ export const selectExercise = (state) => {
 
 export const selectSolution = (state, id) => {
   const value = state.solveExercise.solutions[id].solution;
-
   let error = parseFormalization(
     value, new Set(state.solveExercise.constants),
     arrayToArityMap(state.solveExercise.predicates),
     arrayToArityMap(state.solveExercise.functions),
     parseFormulaWithPrecedence
   );
-
-  return { value, error };
+  return { value, error};
 };
 
 export const selectStatus = (state) => {
