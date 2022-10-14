@@ -5,12 +5,13 @@ import {
   selectStatus, selectError, addChanged, fetchAllUsers, saveAdmins,
   selectAllUsers, selectChangedAdmins
 } from "../../redux/adminsSlice";
+import {selectUser} from "../../redux/userSlice";
 
 
-function UserList({ users, status, error, fetchAllUsers, addChanged, changedAdmins, saveAdmins }) {
+function UserList({ users, user_name, status, error, fetchAllUsers, addChanged, changedAdmins, saveAdmins }) {
   useEffect(() => {
     if (status === 'idle') {
-      fetchAllUsers();
+      fetchAllUsers(user_name);
     }
   }, [status, fetchAllUsers]);
 
@@ -66,6 +67,7 @@ const mapStateToProps = (state) => {
     status: selectStatus(state),
     error: selectError(state),
     changedAdmins: selectChangedAdmins(state),
+    user_name: selectUser(state)
   };
 };
 

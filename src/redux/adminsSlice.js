@@ -8,10 +8,10 @@ import {fetchData} from "./fetchData";
 
 export const fetchAllUsers = createAsyncThunk(
   'users',
-  async (_, { rejectWithValue }) => {
+  async (user, { rejectWithValue }) => {
     try {
       let response = await fetchData(
-          `/api/exercises/allUsers`, 'GET'
+          `/api/exercises/allUsers/${user}`, 'GET'
       );
     return response;
     } catch (err) {

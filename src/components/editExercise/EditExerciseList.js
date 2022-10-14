@@ -9,12 +9,11 @@ import {
   selectError
 } from '../../redux/exercisesSlice';
 import {
-  fetchExercise
-} from '../../redux/solveExerciseSlice';
-import {selectUser} from "../../redux/userSlice";
+  fetchSavedExercise
+} from '../../redux/addExerciseSlice';
 
 
-function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExercise, username }) {
+function ExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedExercise }) {
   useEffect(() => {
     if (status === 'idle') {
       fetchAllExercises();
@@ -27,9 +26,9 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExerci
   } else if (status === 'succeeded') {
     let exercises_list = exercises.map((x) => (
       <ListGroup.Item
-        as={Link} to={`/solve/${x.exercise_id}`} key={x.exercise_id}
+        as={Link} to={`/edit/${x.exercise_id}`} key={x.exercise_id}
         variant="primary" action
-        onClick={() => fetchExercise({exercise_id:x.exercise_id, user_name: username })}
+        onClick={() => fetchSavedExercise(x.exercise_id)}
       >
         { x.title }
       </ListGroup.Item>
@@ -54,12 +53,11 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExerci
 const mapStateToProps = (state) => {
   return {
     exercises: selectExercises(state),
-    username: selectUser(state),
     status: selectStatus(state),
     error: selectError(state),
   };
 };
 
-const mapDispatchToProps = { fetchAllExercises, fetchExercise };
+const mapDispatchToProps = { fetchAllExercises, fetchSavedExercise };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExerciseList);

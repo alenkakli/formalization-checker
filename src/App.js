@@ -11,7 +11,7 @@ import LoginForm from './components/login/LoginForm';
 import ExerciseList from './components/solveExercise/ExerciseList';
 import SolveExercise from './components/solveExercise/SolveExercise';
 import AddExercise from './components/addExercise/AddExercise';
-import { logOut } from './redux/userSlice';
+import {logOut} from './redux/userSlice';
 import AdminRoute from "./components/login/AdminRoute";
 import Exercises from "./components/studentProgress/Exercises";
 import UserSolutionsList from "./components/studentProgress/UserSolutionsList";
@@ -19,9 +19,12 @@ import UsersToExercise from "./components/studentProgress/UsersToExercise";
 import UserList from "./components/addAdmins/UserList";
 import {BASE_NAME} from "./config";
 import {changeStatus} from "./redux/addExerciseSlice";
+import {changeExerciseStatus} from "./redux/exercisesSlice";
+import EditExercise from "./components/editExercise/EditExercise";
+import EditExerciseList from "./components/editExercise/EditExerciseList";
 
 
-function App({ isLoggedIn, user, logOut, changeStatus }) {
+function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isAdmin }) {
   let loginInfo = null;
   if (isLoggedIn) {
     loginInfo = (
@@ -41,24 +44,58 @@ function App({ isLoggedIn, user, logOut, changeStatus }) {
       </Button>
     );
   }
+  if(!isAdmin){
+    return (
+        <BrowserRouter basename={BASE_NAME}>
+          <div className="App">
+            <Navbar bg="dark" variant="dark" sticky="top">
+              <Nav className="mr-auto">
+                <Nav.Link className="px-4" as={Link} to="/" onClick={() => changeExerciseStatus()}>
+                  Home
+                </Nav.Link>
 
+              </Nav>
+              <Nav>
+                { loginInfo }
+              </Nav>
+            </Navbar>
+            <Container className="my-3">
+              <Switch>
+                <ProtectedRoute exact path="/" component={ExerciseList} />
+                <Route exact path="/login" component={LoginForm} />
+                <ProtectedRoute path="/solve/:id" component={SolveExercise} />
+
+                <Route path="*" component={() => {
+                  return <Alert variant="danger">404 Not Found</Alert>
+                }} />
+              </Switch>
+            </Container>
+          </div>
+        </BrowserRouter>
+    );
+  }
   return (
     <BrowserRouter basename={BASE_NAME}>
       <div className="App">
         <Navbar bg="dark" variant="dark" sticky="top">
           <Nav className="mr-auto">
-            <Nav.Link className="px-4" as={Link} to="/">
+            <Nav.Link className="px-4" as={Link} to="/" onClick={() => changeExerciseStatus()}>
               Home
             </Nav.Link>
-            <Nav.Link className="px-4" as={Link} to="/add" onClick={() => changeStatus()}>
-              Add
-            </Nav.Link>
-            <Nav.Link className="px-4" as={Link} to="/progress">
-              Student progress
-            </Nav.Link>
-            <Nav.Link className="px-4" as={Link} to="/admins">
-              Admin
-            </Nav.Link>
+
+              <Nav.Link className="px-4" as={Link} to="/add" onClick={() => changeStatus()}>
+                Add
+              </Nav.Link>
+              <Nav.Link className="px-4" as={Link} to="/edit" onClick={() => changeExerciseStatus()}>
+                Edit
+              </Nav.Link>
+              <Nav.Link className="px-4" as={Link} to="/progress" onClick={() => changeExerciseStatus()}>
+                Student progress
+              </Nav.Link>
+              <Nav.Link className="px-4" as={Link} to="/admins">
+                Admin
+              </Nav.Link>
+
           </Nav>
           <Nav>
             { loginInfo }
@@ -75,6 +112,8 @@ function App({ isLoggedIn, user, logOut, changeStatus }) {
             <ProtectedRoute path="/solve/:id" component={SolveExercise} />
 
             <AdminRoute exact path="/add" component={AddExercise}  />
+            <AdminRoute exact path="/edit" component={EditExerciseList}  />
+            <AdminRoute exact path="/edit/:id" component={EditExercise}  />
 
             <Route path="*" component={() => {
               return <Alert variant="danger">404 Not Found</Alert>
@@ -94,6 +133,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = { logOut, changeStatus };
+const mapDispatchToProps = { logOut, changeStatus, changeExerciseStatus };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

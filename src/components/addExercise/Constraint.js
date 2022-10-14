@@ -17,6 +17,8 @@ function Constraint({ value, error, update }) {
         type="text"
         placeholder="Enter constraints"
         value={value}
+        as="textarea"
+        rows={1}
         onChange={(e) => update(e.target.value)}
       />
       <SyntaxError value={value} error={error} />

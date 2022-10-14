@@ -37,6 +37,69 @@ export const addNewExercise = createAsyncThunk(
   }
 );
 
+export const saveExercise = createAsyncThunk(
+  'saveExercise',
+  async (_, { getState, rejectWithValue }) => {
+    let exercise = selectExercise(getState());
+    if (!exercise) {
+      return rejectWithValue("Exercise contains errors.");
+    }
+    try {
+      let response = await fetchData(
+        '/api/exercises/edit', 'POST', exercise
+      );
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const removeExercise = createAsyncThunk(
+  'saveExercise',
+  async (_, { getState, rejectWithValue }) => {
+    let exercise = selectExercise(getState());
+    if (!exercise) {
+      return rejectWithValue("Exercise contains errors.");
+    }
+    try {
+      let response = await fetchData(
+        '/api/exercises/edit/remove', 'POST', exercise
+      );
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const fetchSavedExercise = createAsyncThunk(
+  'fetchSavedExercise',
+  async (exercise_id, { getState, rejectWithValue }) => {
+    try {
+      let response = await fetchData(
+          `/api/exercises/edit/${exercise_id}`, 'GET'
+      );
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const fetchExercise = createAsyncThunk(
+    'fetchExercise',
+    async (exercise_id, { rejectWithValue }) => {
+      try {
+        let response = await fetchData(
+            `/api/exercises/${exercise_id}`, 'GET'
+        );
+        return response;
+      } catch (err) {
+        return rejectWithValue(err.message);
+      }
+    }
+);
 
 /* slice */
 export const addExerciseSlice = createSlice({
@@ -48,8 +111,10 @@ export const addExerciseSlice = createSlice({
     predicates: '',
     functions: '',
     constraint: '',
+    id: '',
     propositions: [{
       proposition: '',
+      proposition_id: '',
       formalizations: [''],
       constraints: ['']
     }],
@@ -133,6 +198,21 @@ export const addExerciseSlice = createSlice({
     changeStatus: {
       reducer: (state, action) => {
         state.added = null;
+        state.status = 'idle';
+        state.title = '';
+        state.description = '';
+        state.constants = '';
+        state.predicates = '';
+        state.functions = '';
+        state.constraint = '';
+        state.id = '';
+        state.propositions = [{
+          proposition: '',
+          proposition_id: '',
+          formalizations: [''],
+          constraints: ['']
+        }];
+
       }
     },
   },
@@ -159,7 +239,96 @@ export const addExerciseSlice = createSlice({
     [addNewExercise.rejected]: (state, action) => {
       state.status = 'failed';
       state.error = action.payload;
-    }
+    },
+    [saveExercise.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [saveExercise.fulfilled]: (state, action) => {
+      state.status = 'succeeded';
+      state.title = '';
+      state.description = '';
+      state.constants = '';
+      state.predicates = '';
+      state.functions = '';
+      state.constraint = '';
+      state.id = '';
+      state.propositions = [{
+        proposition: '',
+        proposition_id: '',
+        formalizations: [''],
+        constraints: ['']
+      }];
+    },
+    [saveExercise.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    },
+    [removeExercise.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [removeExercise.fulfilled]: (state, action) => {
+      state.status = 'removed';
+      state.title = '';
+      state.description = '';
+      state.constants = '';
+      state.predicates = '';
+      state.functions = '';
+      state.constraint = '';
+      state.id = '';
+      state.propositions = [{
+        proposition: '',
+        proposition_id: '',
+        formalizations: [''],
+        constraints: ['']
+      }];
+    },
+    [removeExercise.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    },
+    [fetchExercise.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [fetchExercise.fulfilled]: (state, action) => {
+      state.status = 'succeeded';
+    },
+    [fetchExercise.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    },
+    [fetchSavedExercise.pending]: (state, action) => {
+      state.status = 'loading';
+    },
+    [fetchSavedExercise.fulfilled]: (state, action) => {
+      state.status = 'idle';
+      const exercise = action.payload;
+      state.title = exercise.title;
+      state.description = exercise.description;
+      state.constants = exercise.constants;
+      state.predicates = exercise.predicates;
+      state.functions = exercise.functions;
+      state.constraint = exercise.constraints === undefined? "": exercise.constraints;
+      state.id = exercise.exercise_id;
+      state.propositions = [];
+      for (let i = 0; i < exercise.propositions.length; i++) {
+        let formalization = [];
+        let constraint = [];
+        for (let j = 0; j < exercise.propositions[i].formalization.length; j++) {
+          formalization.push(exercise.propositions[i].formalization[j].formalization);
+          constraint.push(exercise.propositions[i].formalization[j].constraints);
+        }
+        state.propositions.push({
+          proposition: exercise.propositions[i].proposition,
+          proposition_id: exercise.propositions[i].proposition_id,
+          formalizations: formalization,
+          constraints: constraint
+        })
+      }
+    },
+    [fetchSavedExercise.rejected]: (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    },
   }
 });
 
@@ -388,6 +557,7 @@ const selectExercise = (state) => {
     predicates: state.addExercise.predicates,
     functions: state.addExercise.functions,
     constraint: state.addExercise.constraint,
+    id: state.addExercise.id,
     propositions: state.addExercise.propositions,
   };
 };

@@ -28,7 +28,12 @@ export const exercisesSlice = createSlice({
     status: 'idle',
     error: null
   },
-  reducers: {},
+  reducers: {changeExerciseStatus: {
+      reducer: (state, action) => {
+        state.added = null;
+        state.status = 'idle';
+      }
+    },},
   extraReducers: {
     [fetchAllExercises.pending]: (state, action) => {
       state.status = 'loading';
@@ -44,6 +49,10 @@ export const exercisesSlice = createSlice({
   }
 });
 
+/* export actions */
+export const {
+  changeExerciseStatus
+} = exercisesSlice.actions;
 
 /* selectors */
 

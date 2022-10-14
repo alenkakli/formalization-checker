@@ -1,17 +1,22 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Form, Button, Spinner } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
-  updateUsername, updatePassword, logIn, logInByGithub
+    updateUsername, updatePassword, logIn, logInByGithub, setUser
 } from '../../redux/userSlice';
 import {CLIENT_ID, REDIRECT} from "../../config";
 
 
 function LoginForm({
-  usernameValue, passwordValue, updateUsername, updatePassword,
+  usernameValue, passwordValue, updateUsername, updatePassword, setUser,
   location, isLoggedIn, status, error, logIn, logInByGithub
 }) {
+    useEffect(() => {
+        if (localStorage.getItem("token") !== null) {
+            setUser();
+        }
+    }, [status, setUser]);
 
   if (status === 'loading') {
     return <Spinner animation="border" variant="primary" />;
@@ -91,6 +96,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = { updateUsername, updatePassword, logIn, logInByGithub };
+const mapDispatchToProps = { updateUsername, updatePassword, logIn, logInByGithub, setUser };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);

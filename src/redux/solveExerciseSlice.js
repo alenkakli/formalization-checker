@@ -19,10 +19,10 @@ import {
 
 export const fetchExercise = createAsyncThunk(
   'solveExercise/fetchExercise',
-  async (exercise_id, { rejectWithValue }) => {
+  async ({exercise_id, user_name}, { rejectWithValue }) => {
     try {
       let response = await fetchData(
-        `/api/exercises/${exercise_id}`, 'GET'
+        `/api/exercises/${exercise_id}`, 'POST', { username: user_name}
       );
       return response;
     } catch (err) {
@@ -84,12 +84,19 @@ export const solveExerciseSlice = createSlice({
       state.functions = parseFunctions(state.exercise.functions);
       for (let p of state.exercise.propositions) {
         state.solutions[p.proposition_id] = {
-          solution: '',
+
+
           evaluation: null,
 
           status: 'idle',
           error: null,
         };
+        if(p.solution === null || p.solution === undefined){
+          state.solutions[p.proposition_id]["solution"] = '';
+        }
+        else{
+          state.solutions[p.proposition_id]["solution"] = p.solution
+        }
       }
     },
     [fetchExercise.rejected]: (state, action) => {

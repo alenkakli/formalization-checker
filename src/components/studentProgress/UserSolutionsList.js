@@ -26,8 +26,11 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
     let proposition = null;
     let first= false
     for(let i = 0; i < solutions.length; i++){
-      if(proposition !== solutions[i].proposition && first){
+      if(proposition === null){
         proposition = solutions[i].proposition;
+        first = true;
+      }
+      else if(proposition !== solutions[i].proposition && first){
         s.push(<h5   key={proposition}> {proposition}</h5>)
         s.push(<Table striped bordered hover>
           <thead>
@@ -43,10 +46,7 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
         </Table>
           );
         table = [];
-      }
-      else if(proposition === null){
         proposition = solutions[i].proposition;
-        first = true;
       }
       if(solutions[i].is_correct){
         table.push(
@@ -68,6 +68,23 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
             </tr>)
       }
     }
+
+    //last element of array
+    s.push(<h5   key={proposition}> {proposition}</h5>)
+    s.push(<Table striped bordered hover>
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Solution</th>
+        <th>Correct</th>
+      </tr>
+      </thead>
+      <tbody>
+      {table}
+      </tbody>
+    </Table>
+    );
+
     content = (
         <div key={s}>{ s }</div>
     );

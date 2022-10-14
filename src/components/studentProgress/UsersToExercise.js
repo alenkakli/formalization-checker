@@ -23,23 +23,59 @@ function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchU
   if (status === 'loading') {
     content = <Spinner animation="border" variant="primary" />;
   } else if (status === 'succeeded') {
-    let user_list = users.map((x) => (
-        <tr key={x.user_name}>
-          <td>
-            <Link to={`/progress/exercise/users/solutions`} key={x.user_name} onClick={() => fetchUsersSolutions( {exercise_id: x.exercise_id, user_name: x.user_name})}>
-              { x.user_name }
-            </Link>
-          </td>
-          <td>{x.solved}</td>
-          <td>{x.attempts}</td>
-        </tr>
-    ));
+      let user_list = []
+      for(let i = 0; i < users.length; i++){
+          console.log(users[i])
+          if(users[i].lastattemptcorrec){
+              user_list.push(<tr key={users[i].user_name}>
+                  <td>
+                      <Link to={`/progress/exercise/users/solutions`} key={users[i].user_name} onClick={() => fetchUsersSolutions( {exercise_id: users[i].exercise_id, user_name: users[i].user_name})}>
+                          { users[i].user_name }
+                      </Link>
+                  </td>
+                  <td>{users[i].solved} </td>
+                  <td>{users[i].attempted} </td>
+                  <td>{users[i].successful_attempts}</td>
+                  <td>users[i].attempts}</td>
+                  <td>users[i].huuu}</td>
+                  <td>{users[i].last_attempt_date.split(".")[0].replace("T", " ") + " "} &#x2713;</td>
+                  </tr>
+                  )
+          }
+          else{
+              user_list.push(<tr key={users[i].user_name}>
+                      <td>
+                          <Link to={`/progress/exercise/users/solutions`} key={users[i].user_name} onClick={() => fetchUsersSolutions( {exercise_id: users[i].exercise_id, user_name: users[i].user_name})}>
+                              { users[i].user_name }
+                          </Link>
+                      </td>
+                      <td>{users[i].solved} </td>
+                      <td>{users[i].attempted} </td>
+                      <td>{users[i].successful_attempts}</td>
+                      <td>{users[i].attempts}</td>
+                      <td>{users[i].last_attempt_date.split(".")[0].replace("T", " ") + " "} &#x2715;</td>
+                  </tr>
+              )
+          }
+
+
+      }
+
     content =<Table striped bordered hover>
         <thead>
         <tr>
+            <th> </th>
+            <th colSpan={2}>Propositions </th>
+            <th colSpan={2}>Attempt</th>
+            <th> </th>
+        </tr>
+        <tr>
             <th>Student</th>
             <th>Solved</th>
-            <th># Attempts</th>
+            <th>Attempted</th>
+            <th>Successful</th>
+            <th>Total</th>
+            <th>Last attempt</th>
         </tr>
         </thead>
         <tbody>
@@ -66,7 +102,6 @@ function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchU
 const mapStateToProps = (state) => {
   return {
     users: selectUsers(state),
-    proposition_id: selectProposition(state),
     status: selectStatus(state),
     error: selectError(state),
     title: selectExerciseTitle(state),

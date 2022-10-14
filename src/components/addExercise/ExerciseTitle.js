@@ -7,17 +7,18 @@ import {
 } from '../../redux/addExerciseSlice';
 
 
-function ExerciseTitle({ value, update }) {  
+function ExerciseTitle({ value, update }) {
   return (
     <Form.Group>
       <Form.Label>
-        Exercise title:
+          Exercise title:
       </Form.Label>
       <Form.Control
         type="text"
         placeholder="Enter exercise title"
         value={value}
         onChange={(e) => update(e.target.value)}
+
       />
       { value === "" ?
         <Form.Text className="mb-3 text-danger">

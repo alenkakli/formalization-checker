@@ -73,6 +73,12 @@ export const userSlice = createSlice({
       state.status = 'idle';
       state.error = '';
     },
+    setUser: (state) => {
+      let data = JSON.parse(Buffer.from(localStorage.getItem("token").split(".")[1], "base64").toString());
+      state.user = {"username": data.username};
+      state.isLoggedIn = true;
+      state.isAdmin = data.isAdmin;
+    },
   },
   extraReducers: {
     [logIn.pending]: (state, action) => {
@@ -108,7 +114,7 @@ export const userSlice = createSlice({
         state.user = {"username": data.username};
         state.isLoggedIn = true;
         state.isAdmin = data.isAdmin;
-        localStorage["token"] = action.payload.token
+        localStorage.setItem("token", action.payload.token);
       } else {
         state.error = '';
       }
@@ -120,12 +126,17 @@ export const userSlice = createSlice({
   }
 });
 
+export const selectUser = (state) => {
+  return state.user.user.username;
+}
+
 
 /* export actions */
 export const {
   updateUsername,
   updatePassword,
-  logOut
+  logOut,
+  setUser
 } = userSlice.actions;
 
 

@@ -21,6 +21,8 @@ function Solution({ exercise_id, proposition_id, proposition,
         <Form.Control
           type="text"
           placeholder="Enter formalization"
+          as="textarea"
+          rows={1}
           value={value}
           onChange={(e) => update(e.target.value, proposition_id)}
         />

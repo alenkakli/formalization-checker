@@ -21,6 +21,8 @@ function Formalization({ i, j, value, value2, error, error2, remove, update, upd
           type="text"
           placeholder="Enter formalization"
           value={value}
+          as="textarea"
+          rows={1}
           onChange={(e) => update(e.target.value, i, j)}
         />
         <SyntaxError value={value} error={error} />
@@ -32,6 +34,8 @@ function Formalization({ i, j, value, value2, error, error2, remove, update, upd
           type="text"
           placeholder="Enter constraints"
           value={value2}
+          as="textarea"
+          rows={1}
           onChange={(e) => updateConstraints(e.target.value, i, j)}
         />
         <SyntaxError value={value2} error={error2} />
