@@ -17,7 +17,7 @@ export const logIn = createAsyncThunk(
       data["username"] = username;
       data["password"] = password;
       let response = await fetchData(
-          `/api/exercises/logIn`, 'POST', data
+          `/api/users/logIn`, 'POST', data
       );
 
     return response;
@@ -34,7 +34,7 @@ export const logInByGithub = createAsyncThunk(
       let data = {};
       data["code"] = code;
       let response = await fetchData(
-          `/api/exercises/logIn/github/auth`, 'POST', data
+          `/api/users/logIn/github/auth`, 'POST', data
       );
       return response;
     } catch (err) {
