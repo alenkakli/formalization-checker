@@ -72,5 +72,4 @@ export const selectError = (state) => {
   return state.exercises.error;
 };
 
-
 export default exercisesSlice.reducer;

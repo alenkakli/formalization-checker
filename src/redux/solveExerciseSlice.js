@@ -170,5 +170,4 @@ export const selectEvalError = (state, id) => {
   return state.solveExercise.solutions[id].error;
 };
 
-
 export default solveExerciseSlice.reducer;

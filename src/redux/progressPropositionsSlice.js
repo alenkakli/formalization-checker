@@ -7,7 +7,6 @@ import { fetchData } from './fetchData';
 
 /* async actions */
 
-// todo nie progress/progress vo fetch data
 export const fetchAllUsersToExercise = createAsyncThunk(
     'exercises/fetchAllUsersToExercise',
     async (exercise_id, { rejectWithValue }) => {
@@ -99,10 +98,10 @@ export const selectExerciseTitle = (state) => {
   return null;
 };
 
-
 export const selectUsersSolution = (state) => {
   return state.propositions.solutions;
 };
+
 export const selectUserName = (state) => {
   return state.propositions.user;
 };
@@ -114,6 +113,5 @@ export const selectStatus = (state) => {
 export const selectError = (state) => {
   return state.propositions.status;
 };
-
 
 export default progressPropositionsSlice.reducer;

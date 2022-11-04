@@ -334,6 +334,7 @@ export const addExerciseSlice = createSlice({
 
 
 /* export actions */
+
 export const {
   updateExerciseTitle,
   updateDescription,
@@ -493,6 +494,7 @@ export const selectFormalization = createSelector(
     return { value, error };
   }
 );
+
 export const selectConstraints = createSelector(
   [
     (state, i, j) => state.addExercise.propositions[i].constraints[j],
@@ -509,6 +511,7 @@ export const selectConstraints = createSelector(
     return { value, error };
   }
 );
+
 export const selectConstraint = createSelector(
   [
     (state) => state.addExercise.constraint,
@@ -566,6 +569,5 @@ export const checkExercise = (state) => {
   let exercise = selectExercise(state);
   return !exercise;
 };
-
 
 export default addExerciseSlice.reducer;

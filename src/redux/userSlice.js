@@ -10,14 +10,14 @@ import {fetchData} from "./fetchData";
 /* async actions */
 
 export const logIn = createAsyncThunk(
-  'user/logIn',
+  'user/login',
   async ({ username, password }, { rejectWithValue }) => {
     try {
       let data = {};
       data["username"] = username;
       data["password"] = password;
       let response = await fetchData(
-          `/api/users/logIn`, 'POST', data
+          `/api/users/login`, 'POST', data
       );
 
     return response;
@@ -28,13 +28,13 @@ export const logIn = createAsyncThunk(
   }
 );
 export const logInByGithub = createAsyncThunk(
-  'user/logInGithub',
+  'user/loginGithub',
   async ( {code},  { rejectWithValue }) => {
     try {
       let data = {};
       data["code"] = code;
       let response = await fetchData(
-          `/api/users/logIn/github/auth`, 'POST', data
+          `/api/users/login/github/auth`, 'POST', data
       );
       return response;
     } catch (err) {
@@ -126,18 +126,16 @@ export const userSlice = createSlice({
   }
 });
 
+/* export actions */
 export const selectUser = (state) => {
   return state.user.user.username;
 }
 
-
-/* export actions */
 export const {
   updateUsername,
   updatePassword,
   logOut,
   setUser
 } = userSlice.actions;
-
 
 export default userSlice.reducer;
