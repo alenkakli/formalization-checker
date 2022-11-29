@@ -15,10 +15,11 @@ import Description from '../addExercise/Description';
 
 function EditExercise({ status, error, containsErrors, removeExercise, saveExercise }) {
   let content = null;
+  console.log(status)
   if (status === 'idle') {
     content = (
       <Form>
-        <h2>Add exercise</h2>
+        <h2>Edit exercise</h2>
         <ExerciseTitle />
         <Description />
         <LanguageSection />
@@ -46,15 +47,15 @@ function EditExercise({ status, error, containsErrors, removeExercise, saveExerc
   } else if (status === 'loading') {
     content = <Spinner animation="border" variant="primary" />;
   } else if (status === 'succeeded') {
-    content = (
+      content = (
       <Alert variant="success">
-        Exercise  was succefully changed to the database.
+        Exercise  was successfully changed to the database.
       </Alert>
     );
-  }else if (status === 'removed') {
+  } else if (status === 'removed') {
     content = (
       <Alert variant="success">
-        Exercise  was succefully removed from database.
+        Exercise  was successfully removed from database.
       </Alert>
     );
   } else if (status === 'failed') {

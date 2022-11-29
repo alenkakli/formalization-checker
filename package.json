@@ -2,7 +2,7 @@
   "name": "formalization-checker-front-end",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://fmfi-uk-1-ain-412.github.io/formalization-checker",
+  "homepage": ".",
   "js-fol-parser": {
     "file": "../../js-fol-parser"
   },

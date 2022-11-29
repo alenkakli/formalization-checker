@@ -3,16 +3,12 @@ import {Spinner, Alert, Table} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {Link} from "react-router-dom";
 import {
-    selectUsers,
-    selectStatus,
-    selectError, fetchUsersSolutions, selectProposition, fetchAllUsersToExercise, selectExerciseTitle
+    selectUsers, selectStatus, selectError,
+    fetchUsersSolutions, fetchAllUsersToExercise, selectExerciseTitle
 } from "../../redux/progressPropositionsSlice";
 
 
 function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchUsersSolutions, id, title })  {
-
-
-
   useEffect( () => {
     if (status === 'idle') {
         fetchAllUsersToExercise(id);
@@ -26,7 +22,9 @@ function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchU
       let user_list = []
       for(let i = 0; i < users.length; i++){
           console.log(users[i])
-          if(users[i].lastattemptcorrec){
+          // todo, vypis pre neadmina -> progres iba prihlaseneho usera
+          if (users[i].isAdmin) console.log("aaa admin")
+          if(users[i].last_attempt_correct){
               user_list.push(<tr key={users[i].user_name}>
                   <td>
                       <Link to={`/progress/exercise/users/solutions`} key={users[i].user_name} onClick={() => fetchUsersSolutions( {exercise_id: users[i].exercise_id, user_name: users[i].user_name})}>
@@ -36,8 +34,7 @@ function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchU
                   <td>{users[i].solved} </td>
                   <td>{users[i].attempted} </td>
                   <td>{users[i].successful_attempts}</td>
-                  <td>users[i].attempts}</td>
-                  <td>users[i].huuu}</td>
+                  <td>{users[i].attempts}</td>
                   <td>{users[i].last_attempt_date.split(".")[0].replace("T", " ") + " "} &#x2713;</td>
                   </tr>
                   )

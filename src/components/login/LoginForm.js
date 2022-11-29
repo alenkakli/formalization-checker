@@ -64,6 +64,7 @@ function LoginForm({
         </Form.Group>
         <Button
           type="submit"
+          style={{marginTop: 0.5+'em', marginBottom: 0.5+'em', marginRight: 0.5+'em'}}
           onClick={(e) => {
             e.preventDefault();
             logIn({ username: usernameValue, password: passwordValue });
@@ -73,6 +74,7 @@ function LoginForm({
         </Button>
         <Button
           type="submit"
+          style={{marginTop: 0.5+'em', marginBottom: 0.5+'em', marginLeft: 0.5+'em'}}
           onClick={(e) => {
             e.preventDefault();
               let url = "https://github.com/login/oauth/authorize?client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT +"&scope=read:user"

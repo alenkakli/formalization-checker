@@ -11,7 +11,7 @@ export const fetchAllUsersToExercise = createAsyncThunk(
     'exercises/fetchAllUsersToExercise',
     async (exercise_id, { rejectWithValue }) => {
       try {
-        let response = await fetchData(`/api/progress/progress/${exercise_id}`, 'GET');
+        let response = await fetchData(`/api/progress/${exercise_id}`, 'GET');
         return response;
       } catch (err) {
         return rejectWithValue(err.message);
@@ -22,7 +22,7 @@ export const fetchUsersSolutions = createAsyncThunk(
     'exercises/fetchUsersSolutions',
     async ({exercise_id, user_name}, { rejectWithValue }) => {
       try {
-        let response = await fetchData(`/api/progress/progress/user/${user_name}/${exercise_id}`, 'GET');
+        let response = await fetchData(`/api/progress/user/${user_name}/${exercise_id}`, 'GET');
         return response;
       } catch (err) {
         return rejectWithValue(err.message);

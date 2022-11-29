@@ -56,7 +56,7 @@ export const saveExercise = createAsyncThunk(
 );
 
 export const removeExercise = createAsyncThunk(
-  'saveExercise',
+  'removeExercise',
   async (_, { getState, rejectWithValue }) => {
     let exercise = selectExercise(getState());
     if (!exercise) {
@@ -64,7 +64,7 @@ export const removeExercise = createAsyncThunk(
     }
     try {
       let response = await fetchData(
-        '/api/exercises/edit/remove', 'POST', exercise
+        '/api/exercises/remove', 'DELETE', exercise
       );
       return response;
     } catch (err) {

@@ -44,7 +44,7 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedE
 
   return (
     <div>
-      <h2 className="mb-4">Exercises</h2>
+      <h2 className="mb-4">Edit exercises</h2>
       { content }
     </div>
   );
