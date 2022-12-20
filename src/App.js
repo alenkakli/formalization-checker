@@ -54,16 +54,25 @@ function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isA
                   Home
                 </Nav.Link>
 
+                <Nav.Link className="px-4" as={Link} to="/progress" onClick={() => changeExerciseStatus()}>
+                  Student progress
+                </Nav.Link>
+
               </Nav>
               <Nav>
                 { loginInfo }
               </Nav>
+
             </Navbar>
             <Container className="my-3">
               <Switch>
                 <ProtectedRoute exact path="/" component={ExerciseList} />
                 <Route exact path="/login" component={LoginForm} />
                 <ProtectedRoute path="/solve/:id" component={SolveExercise} />
+// todo
+                <ProtectedRoute exact path="/progress" component={Exercises} />
+                <ProtectedRoute exact path="/progress/exercise/users" component={UsersToExercise} />
+                <ProtectedRoute exact path="/progress/exercise/users/solutions" component={UserSolutionsList} />
 
                 <Route path="*" component={() => {
                   return <Alert variant="danger">404 Not Found</Alert>
@@ -83,18 +92,18 @@ function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isA
               Home
             </Nav.Link>
 
-              <Nav.Link className="px-4" as={Link} to="/add" onClick={() => changeStatus()}>
-                Add
-              </Nav.Link>
-              <Nav.Link className="px-4" as={Link} to="/edit" onClick={() => changeExerciseStatus()}>
-                Edit
-              </Nav.Link>
-              <Nav.Link className="px-4" as={Link} to="/progress" onClick={() => changeExerciseStatus()}>
-                Student progress
-              </Nav.Link>
-              <Nav.Link className="px-4" as={Link} to="/admins">
-                Admin
-              </Nav.Link>
+            <Nav.Link className="px-4" as={Link} to="/add" onClick={() => changeStatus()}>
+              Add
+            </Nav.Link>
+            <Nav.Link className="px-4" as={Link} to="/edit" onClick={() => changeExerciseStatus()}>
+              Edit
+            </Nav.Link>
+            <Nav.Link className="px-4" as={Link} to="/progress" onClick={() => changeExerciseStatus()}>
+              Student progress
+            </Nav.Link>
+            <Nav.Link className="px-4" as={Link} to="/admins">
+              Admin
+            </Nav.Link>
 
           </Nav>
           <Nav>

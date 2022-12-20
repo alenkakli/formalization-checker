@@ -14,6 +14,7 @@ export const fetchAllUsersToExercise = createAsyncThunk(
         let response = await fetchData(`/api/progress/${exercise_id}`, 'GET');
         return response;
       } catch (err) {
+        console.error('error je ' + err);
         return rejectWithValue(err.message);
       }
     }
@@ -25,6 +26,7 @@ export const fetchUsersSolutions = createAsyncThunk(
         let response = await fetchData(`/api/progress/user/${user_name}/${exercise_id}`, 'GET');
         return response;
       } catch (err) {
+        console.error('error je ' + err);
         return rejectWithValue(err.message);
       }
     }

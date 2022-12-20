@@ -22,8 +22,7 @@ function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchU
       let user_list = []
       for(let i = 0; i < users.length; i++){
           console.log(users[i])
-          // todo, vypis pre neadmina -> progres iba prihlaseneho usera
-          if (users[i].isAdmin) console.log("aaa admin")
+          let date = new Date(users[i].last_attempt_date).toLocaleString('sk-SK')
           if(users[i].last_attempt_correct){
               user_list.push(<tr key={users[i].user_name}>
                   <td>
@@ -35,22 +34,22 @@ function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchU
                   <td>{users[i].attempted} </td>
                   <td>{users[i].successful_attempts}</td>
                   <td>{users[i].attempts}</td>
-                  <td>{users[i].last_attempt_date.split(".")[0].replace("T", " ") + " "} &#x2713;</td>
+                  <td>{date} &#x2713;</td>
                   </tr>
                   )
           }
           else{
               user_list.push(<tr key={users[i].user_name}>
-                      <td>
-                          <Link to={`/progress/exercise/users/solutions`} key={users[i].user_name} onClick={() => fetchUsersSolutions( {exercise_id: users[i].exercise_id, user_name: users[i].user_name})}>
-                              { users[i].user_name }
-                          </Link>
-                      </td>
-                      <td>{users[i].solved} </td>
-                      <td>{users[i].attempted} </td>
-                      <td>{users[i].successful_attempts}</td>
-                      <td>{users[i].attempts}</td>
-                      <td>{users[i].last_attempt_date.split(".")[0].replace("T", " ") + " "} &#x2715;</td>
+                  <td>
+                      <Link to={`/progress/exercise/users/solutions`} key={users[i].user_name} onClick={() => fetchUsersSolutions( {exercise_id: users[i].exercise_id, user_name: users[i].user_name})}>
+                          { users[i].user_name }
+                      </Link>
+                  </td>
+                  <td>{users[i].solved} </td>
+                  <td>{users[i].attempted} </td>
+                  <td>{users[i].successful_attempts}</td>
+                  <td>{users[i].attempts}</td>
+                  <td>{date} &#x2715;</td>
                   </tr>
               )
           }

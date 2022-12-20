@@ -9,7 +9,6 @@ import {
 
 function UsersSolutionList({ solutions, users, status, error, name, id, title })  {
 
-
   useEffect( () => {
     if (status === 'idle') {
       fetchUsersSolutions({exercise_id: id, user_name: name});
@@ -25,13 +24,16 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
     let table = [];
     let proposition = null;
     let first= false
+    console.log(solutions)
     for(let i = 0; i < solutions.length; i++){
+      let date = new Date(solutions[i].date).toLocaleString('sk-SK')
+
       if(proposition === null){
         proposition = solutions[i].proposition;
         first = true;
       }
       else if(proposition !== solutions[i].proposition && first){
-        s.push(<h5   key={proposition}> {proposition}</h5>)
+        s.push(<h5   key={proposition} > {proposition}</h5>)
         s.push(<Table striped bordered hover>
           <thead>
           <tr>
@@ -52,7 +54,7 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
         table.push(
             <tr key={solutions[i].date}>
               <td>
-                {solutions[i].date.split(".")[0].replace("T", " ") + " "}
+                {date}
               </td>
               <td>{solutions[i].solution}</td>
               <td>  &#x2713;</td>
@@ -61,7 +63,7 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
       else{
         table.push(<tr key={solutions[i].date}>
               <td>
-                {solutions[i].date.split(".")[0].replace("T", " ") + " "}
+                {date}
               </td>
               <td>{solutions[i].solution}</td>
               <td>  &#x2715;</td>
@@ -70,7 +72,7 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
     }
 
     //last element of array
-    s.push(<h5   key={proposition}> {proposition}</h5>)
+    s.push(<h5 key={proposition}> {proposition}</h5>)
     s.push(<Table striped bordered hover>
       <thead>
       <tr>
@@ -91,7 +93,7 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
   } else if (status === 'failed') {
     content = (
       <Alert variant="danger">
-        {error}
+        { error }
       </Alert>
     );
   }

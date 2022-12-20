@@ -4,7 +4,7 @@ import {
 } from '@reduxjs/toolkit';
 import {fetchData} from "./fetchData";
 
-const debugAccessRights = true;
+const debugAccessRights = false // todo
 
 
 /* async actions */
@@ -52,7 +52,7 @@ export const userSlice = createSlice({
     isLoggedIn: false,
     isAdmin: false,
     user: null,
-    
+
     status: 'idle',
     error: null,
 
