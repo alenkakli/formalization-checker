@@ -16,6 +16,7 @@ import AdminRoute from "./components/login/AdminRoute";
 import Exercises from "./components/studentProgress/Exercises";
 import UserSolutionsList from "./components/studentProgress/UserSolutionsList";
 import UsersToExercise from "./components/studentProgress/UsersToExercise";
+import ExercisesToUser from "./components/userProgress/ExercisesToUser";
 import UserList from "./components/addAdmins/UserList";
 import {BASE_NAME} from "./config";
 import {changeStatus} from "./redux/addExerciseSlice";
@@ -53,12 +54,11 @@ function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isA
                 <Nav.Link className="px-4" as={Link} to="/" onClick={() => changeExerciseStatus()}>
                   Home
                 </Nav.Link>
-
-                <Nav.Link className="px-4" as={Link} to="/progress" onClick={() => changeExerciseStatus()}>
-                  Student progress
+                <Nav.Link className="px-4" as={Link} to="/progress">
+                  Your progress
                 </Nav.Link>
-
               </Nav>
+
               <Nav>
                 { loginInfo }
               </Nav>
@@ -69,10 +69,8 @@ function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isA
                 <ProtectedRoute exact path="/" component={ExerciseList} />
                 <Route exact path="/login" component={LoginForm} />
                 <ProtectedRoute path="/solve/:id" component={SolveExercise} />
-// todo
-                <ProtectedRoute exact path="/progress" component={Exercises} />
-                <ProtectedRoute exact path="/progress/exercise/users" component={UsersToExercise} />
-                <ProtectedRoute exact path="/progress/exercise/users/solutions" component={UserSolutionsList} />
+                <ProtectedRoute exact path="/progress" component={ExercisesToUser} />
+                <ProtectedRoute exact path="/progress/:exercise_id/:user_name" component={UserSolutionsList} />
 
                 <Route path="*" component={() => {
                   return <Alert variant="danger">404 Not Found</Alert>
@@ -91,35 +89,34 @@ function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isA
             <Nav.Link className="px-4" as={Link} to="/" onClick={() => changeExerciseStatus()}>
               Home
             </Nav.Link>
-
-            <Nav.Link className="px-4" as={Link} to="/add" onClick={() => changeStatus()}>
+            <Nav.Link className="px-4" as={Link} to="/add">
               Add
             </Nav.Link>
-            <Nav.Link className="px-4" as={Link} to="/edit" onClick={() => changeExerciseStatus()}>
+            <Nav.Link className="px-4" as={Link} to="/edit">
               Edit
             </Nav.Link>
-            <Nav.Link className="px-4" as={Link} to="/progress" onClick={() => changeExerciseStatus()}>
+            <Nav.Link className="px-4" as={Link} to="/progress">
               Student progress
             </Nav.Link>
             <Nav.Link className="px-4" as={Link} to="/admins">
               Admin
             </Nav.Link>
-
           </Nav>
+
           <Nav>
             { loginInfo }
           </Nav>
+
           </Navbar>
         <Container className="my-3">
           <Switch>
             <ProtectedRoute exact path="/" component={ExerciseList} />
             <AdminRoute exact path="/admins" component={UserList} />
             <AdminRoute exact path="/progress" component={Exercises} />
-            <AdminRoute exact path="/progress/exercise/users" component={UsersToExercise} />
-            <AdminRoute exact path="/progress/exercise/users/solutions" component={UserSolutionsList} />
+            <AdminRoute exact path="/progress/:exercise_id" component={UsersToExercise} />
+            <AdminRoute exact path="/progress/:exercise_id/:user_name" component={UserSolutionsList} />
             <Route exact path="/login" component={LoginForm} />
             <ProtectedRoute path="/solve/:id" component={SolveExercise} />
-
             <AdminRoute exact path="/add" component={AddExercise}  />
             <AdminRoute exact path="/edit" component={EditExerciseList}  />
             <AdminRoute exact path="/edit/:id" component={EditExercise}  />

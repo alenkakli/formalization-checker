@@ -7,12 +7,12 @@ function AdminRoute({ isLoggedIn, isAdmin, component: Component, location, ...re
   return (
     <Route
       {...rest}
-      render={() => {
+      render={(props) => {
         if (isLoggedIn) {
             if(!isAdmin){
                 return <Redirect to={{ pathname: "/", state: { from: location } }} />;
             }
-          return <Component />;
+          return <Component {...props} />;
         } else {
           return <Redirect to={{ pathname: "/login", state: { from: location } }} />;
         }

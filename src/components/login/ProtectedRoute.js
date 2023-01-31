@@ -7,9 +7,9 @@ function ProtectedRoute({ isLoggedIn, component: Component, location, ...rest })
   return (
     <Route
       {...rest}
-      render={() => {
+      render={(props) => {
         if (isLoggedIn) {
-          return <Component />;
+          return <Component {...props} />;
         } else {
           return <Redirect to={{ pathname: "/login", state: { from: location } }} />;
         }

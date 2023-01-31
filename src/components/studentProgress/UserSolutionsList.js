@@ -1,30 +1,26 @@
 import React, { useEffect } from 'react';
 import {Spinner, Alert, Table} from 'react-bootstrap';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import {
   selectStatus,
   selectError, fetchUsersSolutions, selectUsersSolution, selectExerciseTitle, selectUserName
 } from "../../redux/progressPropositionsSlice";
 
 
-function UsersSolutionList({ solutions, users, status, error, name, id, title })  {
-
+function UsersSolutionList({ solutions, status, error, title, match: { params: { exercise_id, user_name } }, fetchUsersSolutions })  {
   useEffect( () => {
-    if (status === 'idle') {
-      fetchUsersSolutions({exercise_id: id, user_name: name});
-    }
-  }, [status, id, users, fetchUsersSolutions]);
+      fetchUsersSolutions({exercise_id, user_name});
+  }, [exercise_id, user_name]);
 
   let content = null;
   if (status === 'loading') {
     content = <Spinner animation="border" variant="primary" />;
-  } else if (status === 'succeeded') {
 
+  } else if (status === 'succeeded') {
     let s = [];
     let table = [];
     let proposition = null;
-    let first= false
-    console.log(solutions)
+    let first= false;
     for(let i = 0; i < solutions.length; i++){
       let date = new Date(solutions[i].date).toLocaleString('sk-SK')
 
@@ -100,7 +96,7 @@ function UsersSolutionList({ solutions, users, status, error, name, id, title })
 
   return (
       <div>
-          <h2 className="mb-4">{title} by {name} </h2>
+          <h2 className="mb-4">{title} by {user_name}</h2>
           { content }
       </div>
   );
@@ -116,6 +112,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = {  };
+const mapDispatchToProps = { fetchUsersSolutions };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UsersSolutionList);

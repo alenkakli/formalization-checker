@@ -10,13 +10,10 @@ import {
 } from '../../redux/exercisesSlice';
 import {fetchAllUsersToExercise} from "../../redux/progressPropositionsSlice";
 
-
 function Exercises({ exercises, status, error, fetchAllExercises, fetchAllUsersToExercise }) {
   useEffect(() => {
-    if (status === 'idle') {
       fetchAllExercises();
-    }
-  }, [status, fetchAllExercises]);
+  }, [fetchAllExercises]);
 
   let content = null;
   if (status === 'loading') {
@@ -25,7 +22,7 @@ function Exercises({ exercises, status, error, fetchAllExercises, fetchAllUsersT
     let exercises_list = exercises.map((x) => (
       <tr key={x.exercise_id}>
         <td>
-          <Link to={`/progress/exercise/users`} key={x.exercise_id} onClick={() => fetchAllUsersToExercise(x.exercise_id)}>
+          <Link to={`/progress/${x.exercise_id}`} key={x.exercise_id}>
             { x.title }
           </Link>
         </td>
@@ -55,9 +52,7 @@ function Exercises({ exercises, status, error, fetchAllExercises, fetchAllUsersT
   return (
     <div>
       <h2 className="mb-4">Student progress</h2>
-
             {content}
-
     </div>
   );
 }

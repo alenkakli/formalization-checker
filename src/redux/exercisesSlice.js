@@ -19,7 +19,6 @@ export const fetchAllExercises = createAsyncThunk(
   }
 );
 
-
 /* slice */
 export const exercisesSlice = createSlice({
   name: 'exercises',
@@ -30,7 +29,6 @@ export const exercisesSlice = createSlice({
   },
   reducers: {changeExerciseStatus: {
       reducer: (state, action) => {
-        state.added = null;
         state.status = 'idle';
       }
     },},
@@ -58,10 +56,6 @@ export const {
 
 export const selectExercises = (state) => {
   return state.exercises.exercises;
-};
-
-export const selectPropositions = (state) => {
-  return state.exercises;
 };
 
 export const selectStatus = (state) => {
