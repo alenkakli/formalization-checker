@@ -11,14 +11,14 @@ import {fetchData} from "./fetchData";
 
 export const logIn = createAsyncThunk(
   'user/logIn',
-  async ({ username, password }, { rejectWithValue }) => {
+  async ({ username, password }, { dispatch, rejectWithValue }) => {
     try {
       let data = {};
       data["username"] = username;
       data["password"] = password;
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
           `/api/exercises/logIn`, 'POST', data
-      );
+      ));
 
     return response;
     } catch (err) {
@@ -29,13 +29,13 @@ export const logIn = createAsyncThunk(
 );
 export const logInByGithub = createAsyncThunk(
   'user/logInGithub',
-  async ( {code},  { rejectWithValue }) => {
+  async ( {code},  { dispatch, rejectWithValue }) => {
     try {
       let data = {};
       data["code"] = code;
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
           `/api/exercises/logIn/github/auth`, 'POST', data
-      );
+      ));
       return response;
     } catch (err) {
       console.error(err.message)

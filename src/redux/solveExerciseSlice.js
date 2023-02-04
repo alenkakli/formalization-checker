@@ -19,11 +19,11 @@ import {
 
 export const fetchExercise = createAsyncThunk(
   'solveExercise/fetchExercise',
-  async ({exercise_id, user_name}, { rejectWithValue }) => {
+  async ({exercise_id, user_name}, { dispatch, rejectWithValue }) => {
     try {
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
         `/api/exercises/${exercise_id}`, 'POST', { username: user_name}
-      );
+      ));
       return response;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -33,12 +33,12 @@ export const fetchExercise = createAsyncThunk(
 
 export const evaluate = createAsyncThunk(
   'solveExercise/evaluate',
-  async ({ exercise_id, proposition_id, solution, user }, { rejectWithValue }) => {
+  async ({ exercise_id, proposition_id, solution, user }, { dispatch, rejectWithValue }) => {
     try {
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
         `/api/exercises/${exercise_id}/${proposition_id}`, 'POST',
         { solution, user}
-      );
+      ));
       return response;
     } catch (err) {
       return rejectWithValue(err.message);

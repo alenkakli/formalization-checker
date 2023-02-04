@@ -21,15 +21,15 @@ import {
 
 export const addNewExercise = createAsyncThunk(
   'addExercise/addNewExercise',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { dispatch, getState, rejectWithValue }) => {
     let exercise = selectExercise(getState());
     if (!exercise) {
       return rejectWithValue("Exercise contains errors.");
     }
     try {
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
         '/api/exercises', 'POST', exercise
-      );
+      ));
       return response;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -39,15 +39,15 @@ export const addNewExercise = createAsyncThunk(
 
 export const saveExercise = createAsyncThunk(
   'saveExercise',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { dispatch, getState, rejectWithValue }) => {
     let exercise = selectExercise(getState());
     if (!exercise) {
       return rejectWithValue("Exercise contains errors.");
     }
     try {
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
         '/api/exercises/edit', 'POST', exercise
-      );
+      ));
       return response;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -57,15 +57,15 @@ export const saveExercise = createAsyncThunk(
 
 export const removeExercise = createAsyncThunk(
   'saveExercise',
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { dispatch, getState, rejectWithValue }) => {
     let exercise = selectExercise(getState());
     if (!exercise) {
       return rejectWithValue("Exercise contains errors.");
     }
     try {
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
         '/api/exercises/edit/remove', 'POST', exercise
-      );
+      ));
       return response;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -75,11 +75,11 @@ export const removeExercise = createAsyncThunk(
 
 export const fetchSavedExercise = createAsyncThunk(
   'fetchSavedExercise',
-  async (exercise_id, { getState, rejectWithValue }) => {
+  async (exercise_id, { dispatch, getState, rejectWithValue }) => {
     try {
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
           `/api/exercises/edit/${exercise_id}`, 'GET'
-      );
+      ));
       return response;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -89,11 +89,11 @@ export const fetchSavedExercise = createAsyncThunk(
 
 export const fetchExercise = createAsyncThunk(
     'fetchExercise',
-    async (exercise_id, { rejectWithValue }) => {
+    async (exercise_id, { dispatch, rejectWithValue }) => {
       try {
-        let response = await fetchData(
+        let response = await dispatch(fetchData(
             `/api/exercises/${exercise_id}`, 'GET'
-        );
+        ));
         return response;
       } catch (err) {
         return rejectWithValue(err.message);
