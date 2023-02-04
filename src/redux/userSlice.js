@@ -29,10 +29,14 @@ export const logIn = createAsyncThunk(
 );
 export const logInByGithub = createAsyncThunk(
   'user/logInGithub',
-  async ( {code},  { dispatch, rejectWithValue }) => {
+  async ( {code, token},  { dispatch, rejectWithValue }) => {
     try {
       let data = {};
-      data["code"] = code;
+      if (code !== undefined) {
+        data["code"] = code;
+      } else if (token !== undefined) {
+        data["token"] = code;
+      }
       let response = await dispatch(fetchData(
           `/api/exercises/logIn/github/auth`, 'POST', data
       ));
