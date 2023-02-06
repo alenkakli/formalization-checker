@@ -78,7 +78,7 @@ export const userSlice = createSlice({
       state.error = '';
     },
     setUser: (state) => {
-      let data = JSON.parse(Buffer.from(localStorage.getItem("token").split(".")[1], "base64").toString());
+      let data = JSON.parse(Buffer.from(localStorage.getItem("formalization_checker_token").split(".")[1], "base64").toString());
       state.user = {"username": data.username};
       state.isLoggedIn = true;
       state.isAdmin = data.isAdmin;
@@ -97,7 +97,7 @@ export const userSlice = createSlice({
         state.user = {"username": data.username};
         state.isLoggedIn = true;
         state.isAdmin = data.isAdmin;
-        localStorage["token"] = action.payload.token
+        localStorage["formalization_checker_token"] = action.payload.token
       } else {
         state.error = '';
       }
@@ -118,7 +118,7 @@ export const userSlice = createSlice({
         state.user = {"username": data.username};
         state.isLoggedIn = true;
         state.isAdmin = data.isAdmin;
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("formalization_checker_token", action.payload.token);
       } else {
         state.error = '';
       }
