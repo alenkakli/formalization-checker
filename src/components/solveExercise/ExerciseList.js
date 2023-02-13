@@ -14,7 +14,7 @@ import {
 import {selectUser} from "../../redux/userSlice";
 
 
-function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExercise, username }) {
+function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExercise, username, onSelect }) {
   useEffect(() => {
     if (status === 'idle') {
       fetchAllExercises();
@@ -25,13 +25,17 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExerci
   if (status === 'loading') {
     content = <Spinner animation="border" variant="primary" />;
   } else if (status === 'succeeded') {
-    let exercises_list = exercises.map((x) => (
+    let exercises_list = exercises.map((x) => onSelect === undefined ? (
       <ListGroup.Item
         as={Link} to={`/solve/${x.exercise_id}`} key={x.exercise_id}
         variant="primary" action
         onClick={() => fetchExercise({exercise_id:x.exercise_id, user_name: username })}
       >
         { x.title }
+      </ListGroup.Item>
+    ) : (
+      <ListGroup.Item key={x.exercise_id} action onClick={() => onSelect(x.exercise_id)}>
+        {x.title}
       </ListGroup.Item>
     ));
     content = <ListGroup>{ exercises_list }</ListGroup>;

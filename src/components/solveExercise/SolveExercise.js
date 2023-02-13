@@ -12,15 +12,13 @@ import { useParams } from 'react-router';
 import {selectUser} from "../../redux/userSlice";
 
 
-function SolveExercise({ match, exercise, status, error, fetchExercise, user })  {
-
-  let { id } = useParams();
+export function SolveExercise({ match, exercise, status, error, fetchExercise, user, exerciseId, onChange })  {
 
   useEffect(() => {
     if (status === 'idle') {
-      fetchExercise({exercise_id : id, username : user});
+      fetchExercise({exercise_id : exerciseId, username : user});
     }
-  }, [status, id, exercise, fetchExercise]);
+  }, [status, exerciseId, exercise, fetchExercise]);
 
   let content = null;
   if (status === 'loading') {
@@ -29,10 +27,11 @@ function SolveExercise({ match, exercise, status, error, fetchExercise, user }) 
     const propositions_list = exercise.propositions.map((x) => (
       <Solution
         key={x.proposition_id}
-        exercise_id={id}
+        exercise_id={exerciseId}
         proposition_id={x.proposition_id}
         proposition={x.proposition}
         user={user}
+        onChange={onChange}
       />
     ));
     content = (
@@ -71,6 +70,11 @@ function SolveExercise({ match, exercise, status, error, fetchExercise, user }) 
   return content;
 }
 
+function SolveExercise1(props) {
+  let id = useParams()['id'];
+  return <SolveExercise exerciseId={id} {...props} />
+}
+
 const mapStateToProps = (state) => {
   return {
     exercise: selectExercise(state),
@@ -82,4 +86,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { fetchExercise };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SolveExercise);
+export default connect(mapStateToProps, mapDispatchToProps)(SolveExercise1);

@@ -11,7 +11,13 @@ import {
 
 
 function Solution({ exercise_id, proposition_id, proposition,
-                    value, error, update ,  evaluate, user}) {
+                    value, error, update ,  evaluate, user, onChange}) {
+
+  const handleChange = (value) => {
+    update(value, proposition_id);
+    onChange && onChange(value, proposition_id);
+  }
+
   return (
     <div className="clearfix mt-4">
       <Form.Group className="clearfix">
@@ -24,7 +30,7 @@ function Solution({ exercise_id, proposition_id, proposition,
           as="textarea"
           rows={1}
           value={value}
-          onChange={(e) => update(e.target.value, proposition_id)}
+          onChange={(e) => handleChange(e.target.value)}
         />
         <Button
           className="mt-1 float-right"

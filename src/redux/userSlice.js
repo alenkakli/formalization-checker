@@ -3,7 +3,7 @@ import {
   createAsyncThunk
 } from '@reduxjs/toolkit';
 import {fetchData} from "./fetchData";
-
+import { Buffer } from 'buffer';
 
 
 
@@ -35,7 +35,7 @@ export const logInByGithub = createAsyncThunk(
       if (code !== undefined) {
         data["code"] = code;
       } else if (token !== undefined) {
-        data["token"] = code;
+        data["token"] = token;
       }
       let response = await dispatch(fetchData(
           `/api/exercises/logIn/github/auth`, 'POST', data
@@ -131,7 +131,7 @@ export const userSlice = createSlice({
 });
 
 export const selectUser = (state) => {
-  return state.user.user.username;
+  return state.user.user?.username;
 }
 
 

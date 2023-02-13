@@ -1,6 +1,3 @@
-import { BACKEND_URL } from '../config';
-
-
 export const fetchData = (route, method, body = undefined) => {
   return async (_, getState) => {
     const config = {
