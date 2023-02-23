@@ -96,9 +96,10 @@ function AppComponent({ instance, onStateChange }) {
     const r = await dispatch(fetchExercise({ exercise_id: id, username }));
     if (r.type === 'solveExercise/fetchExercise/fulfilled') {
       instance.syncedState = {
-        exercise: r.payload,
+        exercise: JSON.parse(JSON.stringify(r.payload)),
         exerciseId: id
       }
+      instance.pid2index = makePropositionIdToIndexMap(instance.syncedState.exercise);
       setExerciseId(id);
       onStateChange();
     } else {
