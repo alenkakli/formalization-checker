@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://fmfi-uk-1-ain-412.github.io/formalization-checker",
-  "js-fol-parser": {
-    "file": "../../js-fol-parser"
-  },
   "dependencies": {
-    "@fmfi-uk-1-ain-412/js-fol-parser": "file:../js-fol-parser",
+    "@fmfi-uk-1-ain-412/js-fol-parser": "^0.7.0",
     "@reduxjs/toolkit": "^1.5.0",
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^12.1.2",
@@ -20,9 +17,7 @@
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
-    "redux": "^4.0.5",
-    "sleep": "^6.3.0",
-    "system-sleep": "^1.3.7"
+    "redux": "^4.0.5"
   },
   "scripts": {
     "start": "react-scripts start",
