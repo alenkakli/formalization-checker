@@ -38,7 +38,7 @@ export default function configure(backendUrl) {
         pid2index,
         ghAccessToken: additionalArgs?.ghAccessToken,
       };
-      const getState = (instance) => instance.syncedState;
+      const getState = (instance) => JSON.parse(JSON.stringify(instance.syncedState));
       return {
         instance,
         getState
