@@ -9,7 +9,7 @@ import Constraint from './Constraint';
 function LanguageSection() {
   return (
     <div className="mt-4 mb-4">
-      <h4>Language</h4>
+      <h4>Language ℒ</h4>
       <Constants />
       <Predicates />
       <Functions />

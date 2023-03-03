@@ -10,12 +10,14 @@ import {
 } from '../../redux/addExerciseSlice';
 
 
-function Formalization({ i, j, value, value2, error, error2, remove, update, updateConstraints }) {
+function Formalization({ i, j, value, value2, error, error2, remove, update, updateConstraints, cannotBeRemoved }) {
+  const tag = `${i + 1}.${j + 1}`;
+  const id = `-${i}-${j}`;
   return (
-    <div className="clearfix pl-5">
-      <Form.Group className="mb-0">
+    <li className="clearfix mb-4">
+      <Form.Group controlId={`formalization${id}`}>
         <Form.Label>
-          {"Formalization " + (i + 1) + "." + (j + 1)}
+          {`Formalization ${tag}`}
         </Form.Label>
         <Form.Control
           type="text"
@@ -24,31 +26,37 @@ function Formalization({ i, j, value, value2, error, error2, remove, update, upd
           as="textarea"
           rows={1}
           onChange={(e) => update(e.target.value, i, j)}
+          isInvalid={!!error}
         />
+        <Button
+          className="mt-1 float-right"
+          variant="outline-danger"
+          size="sm"
+          onClick={() => remove(i, j)}
+          disabled={cannotBeRemoved}
+        >
+          Remove formalization {tag}
+        </Button>
         <SyntaxError value={value} error={error} />
+      </Form.Group>
 
+      <Form.Group controlId={`constraints${id}`} size="sm">
         <Form.Label>
-          {"Preferred model constraints " + (i + 1) + "." + (j + 1) + "(optional)"}
+          <small>Preferred model constraints {tag} (optional)</small>
         </Form.Label>
         <Form.Control
           type="text"
           placeholder="Enter constraints"
           value={value2}
           as="textarea"
+          size="sm"
           rows={1}
           onChange={(e) => updateConstraints(e.target.value, i, j)}
+          isInvalid={!!error2}
         />
         <SyntaxError value={value2} error={error2} />
-        <Button
-          className="mt-1 float-right"
-          variant="outline-danger"
-          size="sm"
-          onClick={() => remove(i, j)}
-        >
-          Remove
-        </Button>
       </Form.Group>
-    </div>
+    </li>
   );
 }
 

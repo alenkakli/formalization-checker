@@ -9,12 +9,12 @@ import {
 
 function Description({ value, update }) {  
   return (
-    <Form.Group>
+    <Form.Group controlId="exercise-description">
       <Form.Label>
-        Description:
+        Description
       </Form.Label>
       <Form.Control
-        type="text"
+        as="textarea"
         placeholder="Enter description"
         value={value}
         onChange={(e) => update(e.target.value)}

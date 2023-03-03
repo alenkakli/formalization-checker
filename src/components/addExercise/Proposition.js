@@ -12,21 +12,34 @@ import {
 
 
 function Proposition({ i, value, formalizations, add, remove, update }) {
-  const formalizations_list = formalizations.map((x, j) => (
-    <Formalization key={j} i={i} j={j} />
-  ));
+  const formalizationRemovable = formalizations.length > 1;
+  const formalizations_list = formalizations.map((_x, j) =>
+    <Formalization
+      key={j}
+      i={i}
+      j={j}
+      cannotBeRemoved={!formalizationRemovable}
+    />
+  );
+  const propositionFeedback = (value === ""
+    ? <Form.Control.Feedback type="invalid">
+        This field cannot be empty
+      </Form.Control.Feedback>
+    : null
+  );
 
   return (
-    <div className="clearfix mb-2 border-bottom border-dark">
-      <Form.Group className="clearfix mb-0">
-        <Form.Label>
-          {"Proposition " + (i + 1)}
-        </Form.Label>
+    <div className="mb-4">
+      <Form.Group className="clearfix mb-0" controlId={`proposition-${i}`}>
+        <h5><Form.Label className="d-block">
+          Proposition {i + 1}
+        </Form.Label></h5>
         <Form.Control
           type="text"
           placeholder="Enter proposition"
           value={value}
           onChange={(e) => update(e.target.value, i)}
+          isInvalid={!!propositionFeedback}
         />
         <Button
           className="mt-1 mb-1 float-right"
@@ -34,24 +47,22 @@ function Proposition({ i, value, formalizations, add, remove, update }) {
           size="sm"
           onClick={() => remove(i)}
         >
-          Remove proposition
+          Remove proposition {i + 1}
         </Button>
-        { value === "" ?
-          <Form.Text className="mb-3 text-danger">
-            This field cannot be empty
-          </Form.Text>
-          : null
-        }
+        {propositionFeedback}
       </Form.Group>
-      { formalizations_list }
-      <Button
-        className="mt-1 mb-3 float-right"
-        variant="primary"
-        size="sm"
-        onClick={() => add(i)}
-      >
-        Add formalization
-      </Button>
+      <ol className="list-unstyled pl-5">
+        { formalizations_list }
+      </ol>
+      <div className="pl-5 mb-3">
+        <Button
+          variant="outline-success"
+          size="sm"
+          onClick={() => add(i)}
+        >
+          Add formalization
+        </Button>
+      </div>
     </div>
   );
 }

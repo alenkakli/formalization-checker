@@ -9,22 +9,22 @@ import {
 
 
 function PropositionsSection({ propositions, add }) {
-  const propositions_list = propositions.map((x, i) => (
+  const propositions_list = propositions.map((_x, i) => (
     <Proposition key={i} i={i} />
   ));
 
   return (
-    <div className="mt-4 mb-4 clearfix">
-      <h4>Propositions</h4>
+    <div className="mb-4 clearfix">
+      <h4 className="mb-3">Propositions</h4>
       { propositions_list }
-      <Button
-        className="mt-2 float-right"
-        variant="primary"
-        size="sm"
-        onClick={() => add()}
-      >
-        Add proposition
-      </Button>
+      <div>
+        <Button
+          variant="success"
+          onClick={() => add()}
+        >
+          Add proposition
+        </Button>
+      </div>
     </div>
   );
 }
