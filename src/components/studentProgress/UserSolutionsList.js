@@ -96,8 +96,10 @@ function UsersSolutionList({ solutions, status, error, title, match: { params: {
 
   return (
       <div>
-          <h2 className="mb-4">{title} by {user_name}</h2>
-          { content }
+          <h2 className="mb-4" style={{display: "inline-block"}}>{title}</h2>
+          <h4 className="mb-4" style={{display: "inline-block", padding: "0ex 1ex"}}>by</h4>
+          <h2 className="mb-4" style={{display: "inline-block"}}>{user_name}</h2>
+        { content }
       </div>
   );
 }

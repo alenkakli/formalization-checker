@@ -15,10 +15,8 @@ import {
 
 function EditExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedExercise }) {
   useEffect(() => {
-    //if (status === 'idle') {
       fetchAllExercises();
-    //}
-  }, [fetchAllExercises]);//, [status, fetchAllExercises]);
+  }, [fetchAllExercises]);
 
   let content = null;
   if (status === 'loading') {
