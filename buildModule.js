@@ -19,6 +19,8 @@ function cmd(command) {
     });
     // compile js/jsx files
     await cmd("npx babel src/ --out-dir 'lib/dist'");
+    // copy css modules
+    await cmd("npx copyfiles -u 1 'src/**/*.module.*css' 'lib/dist'");
     // isolate bootstrap css
     await cmd("npx isolate-css-cli node_modules/bootstrap/dist/css/bootstrap.min.css -p formalization-checker-ZF2r5pOxUp -u 3 -c -o ./lib/dist/static/");
 })()

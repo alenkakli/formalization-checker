@@ -18,6 +18,7 @@ import {
 import { connect } from 'react-redux';
 
 import './static/css/bootstrap.min.iso.css';
+import styles from './AppComponent.module.scss';
 
 function makePropositionIdToIndexMap(exercise) {
   let m = {}
@@ -45,7 +46,11 @@ export default function configure(backendUrl) {
       };
     },
     AppComponent: (props) => (
-      <div className="formalization-checker-ZF2r5pOxUp">
+      <div
+        className={`formalization-checker-ZF2r5pOxUp${
+          props.isEdited ? '' : (' ' + styles.viewMode)
+        }`}
+      >
         <Provider store={props.instance.store}>
           <AppComponent instance={props.instance} onStateChange={props.onStateChange} />
         </Provider>
@@ -64,7 +69,7 @@ const SolveExerciseEmbedded = connect((state) => {
   }
 }, {})(SolveExercise);
 
-function AppComponent({ instance, onStateChange }) {
+function AppComponent({ instance, onStateChange, isEdited }) {
   const { ghAccessToken } = instance;
   const [exerciseId, setExerciseId] = useState(instance.syncedState.exerciseId)
   const { exercise } = instance.syncedState;

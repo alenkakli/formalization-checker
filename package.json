@@ -32,7 +32,7 @@
     "deploy": "gh-pages -d build -m \"Deploying $(git log -1 --format='%h %s')\"",
     "predeploy": "npm run build && ln -s index.html build/404.html",
     "build-module": "node buildModule.js",
-    "dev-module": "nodemon --ext js,jsx,css --watch src --exec npm run build-module",
+    "dev-module": "nodemon --ext js,jsx,css,scss --watch src --exec npm run build-module",
     "prepare": "npm run build-module"
   },
   "eslintConfig": {

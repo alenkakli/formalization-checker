@@ -1,0 +1,35 @@
+.viewMode {
+    :global {
+        .btn, details {
+            display: none;
+        }
+
+        :not(textarea).form-control,
+        .custom-select,
+        .input-group-prepend,
+        .input-group-append,
+        .input-group-text {
+            border: none;
+            background: initial;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        .input-group.mb-1 {
+            margin-bottom: 0 !important;
+        }
+
+        .form-control {
+            height: auto !important;
+        }
+
+        textarea.form-control {
+            border-style: none none none solid;
+            border-radius: 0;
+            padding-right: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+   }
+}
