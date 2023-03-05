@@ -76,23 +76,22 @@ export const parseFormalization = (input, constants, predicates, functions, pars
   };
 
   try {
-    let a = parser(input, language, factories);
-    a = a.getFreeVariables();
-    if(a.size !== 0){
-      let res = "";
-      for(let element of a){
-        res += element + " ";
-      }
-      throw {"location" : {"start" : { "column": 0,
-                                      "line": 0,
-                                      "offset": 0
-                                      },
-                          "end" : { "column": 0,
-                                    "line": 0,
-                                    "offset": 0
-                                  }
-                           }  ,
-              "message" : "Expected  existential quantifier or universal quantifier but following free " + (a.size === 1? "variable " :  "variables ") + res +  "found."};
+    const fvars = parser(input, language, factories).getFreeVariables();
+    if (fvars.size > 0) {
+      throw ({
+        location: {
+          start: {
+            column: 0, line: 0, offset: 0
+          },
+          end: {
+            column: 0, line: 0, offset: input.length
+          }
+        },
+        message:
+          `The formula should be closed, but the following
+          variable${fvars.size === 1 ? " is" :  "s are"} free:
+          ${Array.from(fvars).join(", ")}.`
+      });
     }
     return null;
   } catch (error) {
@@ -100,60 +99,15 @@ export const parseFormalization = (input, constants, predicates, functions, pars
   }
 }
 
-export function getStringDomainAndPredicates(symbols, constants, language){
-  let d = "𝒟 = {";
-  let i = "";
-  let poc = 0;
-  if(symbols === ''){
-    return ['',''];
+export const makeStructure = (iCWithUnnamed, iPF, C_L) => (
+  !!iCWithUnnamed
+  ? {
+    D: Array.from(new Set(Object.values(iCWithUnnamed))).sort(),
+    iC: Object.fromEntries(
+      Object.entries(iCWithUnnamed).filter(([name, _]) => C_L.has(name))
+    ),
+    iP: iPF,
+    iF: null,
   }
-  for (let [key, value] of Object.entries(constants)){
-    if(language.includes(key)) {
-      i += "𝑖(" + key + ") = " + value + "\n";
-    }
-    if( value <= poc){
-      continue;
-    }
-    d += value + ", ";
-    poc++;
-  }
-  i += "\n";
-  d = d.slice(0, d.length -2 );
-  d += "}\n";
-
-  i += stringForPredicateAndFunctions(symbols);
-  return [d, i];
-}
-
-function stringForPredicateAndFunctions(name){
-  let p = "";
-  for (let [key, value] of Object.entries(name)) {
-    // eslint-disable-next-line no-useless-concat
-    p += "𝑖(" + key + ") = " + "{";
-    if (value[value.length - 1] === undefined) {
-      p += "}\n";
-      continue;
-    }
-    for (let j = 0; j < value.length - 1; j++) {
-      if (value[j] === undefined) {
-        continue;
-      }
-      if(value[j].length === 1){
-        p += value[j] + ", ";
-      }
-      else{
-        p += "(" + value[j] + "), ";
-      }
-
-    }
-    if(value[value.length - 1].length === 1){
-      p += value[value.length - 1] + "}\n";
-    }
-    else{
-      p += "(" +  value[value.length - 1] + ")}\n";
-    }
-
-  }
-
-  return p;
-}
+  : undefined
+);

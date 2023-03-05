@@ -28,7 +28,7 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExerci
     let exercises_list = exercises.map((x) => onSelect === undefined ? (
       <ListGroup.Item
         as={Link} to={`/solve/${x.exercise_id}`} key={x.exercise_id}
-        variant="primary" action
+        action
         onClick={() => fetchExercise({exercise_id:x.exercise_id, user_name: username })}
       >
         { x.title }
@@ -49,7 +49,7 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExerci
 
   return (
     <div>
-      <h2 className="mb-4">Exercises</h2>
+      <h1 className="mb-4">Exercises</h1>
       { content }
     </div>
   );

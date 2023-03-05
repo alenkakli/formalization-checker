@@ -19,36 +19,38 @@ function Solution({ exercise_id, proposition_id, proposition,
   }
 
   return (
-    <div className="clearfix mt-4">
-      <Form.Group className="clearfix">
-        <Form.Label>
-          { proposition }
-        </Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter formalization"
-          as="textarea"
-          rows={1}
-          value={value}
-          onChange={(e) => handleChange(e.target.value)}
-        />
-        <Button
-          className="mt-1 float-right"
-          variant="primary"
-          disabled={error}
-          onClick={() => evaluate({
-            exercise_id,
-            proposition_id,
-            solution: value,
-            user: user
-          })}
-        >
-          Check
-        </Button>
-        <SyntaxError value={value} error={error} />
-      </Form.Group>
+    <Form.Group
+      className="clearfix"
+      controlId={`formalization-${exercise_id}-${proposition_id}`}
+    >
+      <Form.Label>
+        { proposition }
+      </Form.Label>
+      <Form.Control
+        type="text"
+        placeholder="Enter formalization"
+        as="textarea"
+        rows={1}
+        value={value}
+        isInvalid={!!error}
+        onChange={(e) => handleChange(e.target.value)}
+      />
+      <Button
+        className="mt-1 float-right"
+        variant="primary"
+        disabled={error}
+        onClick={() => evaluate({
+          exercise_id,
+          proposition_id,
+          solution: value,
+          user: user
+        })}
+      >
+        Check
+      </Button>
+      <SyntaxError value={value} error={error} />
       <Evaluation proposition_id={proposition_id} />
-    </div>
+    </Form.Group>
   );
 }
 
