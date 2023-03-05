@@ -1,7 +1,6 @@
 {
-  "name": "formalization-checker-front-end",
+  "name": "@fmfi-uk-1-ain-412/formalization-checker",
   "version": "0.1.0",
-  "private": true,
   "main": "lib/dist/AppComponent.js",
   "types": "lib/types/types.d.ts",
   "homepage": "https://fmfi-uk-1-ain-412.github.io/formalization-checker",
