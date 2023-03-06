@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Form, Alert, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   addNewExercise,
@@ -10,7 +10,7 @@ import LanguageSection from './LanguageSection';
 import PropositionsSection from './PropositionsSection';
 import ExerciseTitle from './ExerciseTitle';
 import Description from './Description';
-
+import SaveButtonGroup from './SaveButtonGroup';
 
 function AddExercise({ status, error, containsErrors, title, addExercise, added}) {
   let content = null;
@@ -24,24 +24,18 @@ function AddExercise({ status, error, containsErrors, title, addExercise, added}
       }
       else{
           content = (      <Form>
-                  <h2>Add exercise</h2>
+                  <h1>Add exercise</h1>
                   <ExerciseTitle />
                   <Description />
                   <LanguageSection />
                   <PropositionsSection />
-                  <Button
-                      className="mt-4 mb-5 float-right clearfix"
-                      variant="primary"
-                      size="lg"
-                      disabled={containsErrors}
-                      onClick={addExercise}
-                  >
-                      Save exercise
-                  </Button>
+                  <SaveButtonGroup
+                    containsErrors={containsErrors}
+                    saveExercise={addExercise}
+                  />
               </Form>
           );
       }
-
   } else if (status === 'loading') {
     content = <Spinner animation="border" variant="primary" />;
   } else if (status === 'failed') {

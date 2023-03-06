@@ -2,9 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import './index.css';
-import store from './redux/store';
+import initStore from './redux/store';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { BACKEND_URL } from './config';
+
+const store = initStore(BACKEND_URL);
 
 ReactDOM.render(
   <React.StrictMode>

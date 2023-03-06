@@ -8,24 +8,25 @@ import {
 
 
 function ExerciseTitle({ value, update }) {
+  const feedback = (value === "" ?
+    <Form.Control.Feedback type="invalid">
+      This field cannot be empty
+    </Form.Control.Feedback>
+    : null);
+
   return (
-    <Form.Group>
+    <Form.Group controlId="exercise-title">
       <Form.Label>
-          Exercise title:
+          Exercise title
       </Form.Label>
       <Form.Control
         type="text"
         placeholder="Enter exercise title"
         value={value}
+        isInvalid={!!feedback}
         onChange={(e) => update(e.target.value)}
-
       />
-      { value === "" ?
-        <Form.Text className="mb-3 text-danger">
-          This field cannot be empty
-        </Form.Text>
-        : null
-      }
+      {feedback}
     </Form.Group>
   );
 }

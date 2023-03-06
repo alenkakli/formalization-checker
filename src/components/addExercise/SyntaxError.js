@@ -16,22 +16,22 @@ function SyntaxError({ value, error }) {
 
   const str = value === "" ?
     null : (
-      <div>
+      <div className="text-body">
         {str_1}
-        <u className="bg-warning">
+        <mark className="bg-warning">
           {str_2}
-        </u>
+        </mark>
         {str_3}
       </div>
     );
 
   return (
-    <Form.Text className="mb-3">
+    <Form.Control.Feedback type="invalid">
       {str}
-      <div className="text-danger">
+      <div>
         {error.message}
       </div>
-    </Form.Text>
+    </Form.Control.Feedback>
   );
 }
 

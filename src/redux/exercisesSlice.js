@@ -9,9 +9,9 @@ import { fetchData } from './fetchData';
 
 export const fetchAllExercises = createAsyncThunk(
   'exercises/fetchAllExercises',
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
-      let response = await fetchData('/api/exercises', 'GET');
+      let response = await dispatch(fetchData('/api/exercises', 'GET'));
       return response;
     } catch (err) {
       return rejectWithValue(err.message);

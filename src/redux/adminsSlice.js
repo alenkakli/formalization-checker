@@ -8,11 +8,11 @@ import {fetchData} from "./fetchData";
 
 export const fetchAllUsers = createAsyncThunk(
   'users',
-  async (user, { rejectWithValue }) => {
+  async (user, { dispatch, rejectWithValue }) => {
     try {
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
           `/api/exercises/allUsers/${user}`, 'GET'
-      );
+      ));
     return response;
     } catch (err) {
       console.error(err)
@@ -23,11 +23,11 @@ export const fetchAllUsers = createAsyncThunk(
 
 export const saveAdmins = createAsyncThunk(
   'admins',
-  async (admins, { rejectWithValue }) => {
+  async (admins, { dispatch, rejectWithValue }) => {
     try {
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
           `/api/exercises/allUsers`, 'POST', admins
-      );
+      ));
 
      return response;
     } catch (err) {

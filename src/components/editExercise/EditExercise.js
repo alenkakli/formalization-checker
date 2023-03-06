@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Alert, Spinner } from 'react-bootstrap';
+import { Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
     saveExercise,
@@ -11,36 +11,35 @@ import LanguageSection from '../addExercise/LanguageSection';
 import PropositionsSection from '../addExercise/PropositionsSection';
 import ExerciseTitle from '../addExercise/ExerciseTitle';
 import Description from '../addExercise/Description';
+import SaveButtonGroup from '../addExercise/SaveButtonGroup';
 
-
-function EditExercise({ status, error, containsErrors, removeExercise, saveExercise }) {
+function EditExercise({ status, error, title, containsErrors, removeExercise, saveExercise }) {
   let content = null;
   if (status === 'idle') {
     content = (
       <Form>
-        <h2>Add exercise</h2>
+        <h1>Editing <i>{title}</i></h1>
         <ExerciseTitle />
         <Description />
         <LanguageSection />
         <PropositionsSection />
-        <Button
-          className="mt-4 mb-5 float-right clearfix"
-          variant="primary"
-          size="lg"
-          disabled={containsErrors}
-          onClick={saveExercise}
-        >
-          Save exercise
-        </Button>
-          <Button
-              className="mt-4 mb-5 float-left clearfix"
-              variant="danger"
-              size="lg"
-              disabled={containsErrors}
-              onClick={removeExercise}
-          >
-               Remove exercise
-          </Button>
+        <Row className="justify-content-end">
+          <Col xs={12} md={{order: 2, span: 4}}>
+            <SaveButtonGroup
+              containsErrors={containsErrors}
+              saveExercise={saveExercise}
+            />
+          </Col>
+          <Col xs={12} md={{order:1, span: 4, offset: 4}} className="text-center">
+            <Button
+                variant="outline-danger"
+                size="lg"
+                onClick={removeExercise}
+            >
+                Remove exercise
+            </Button>
+          </Col>
+        </Row>
       </Form>
     );
   } else if (status === 'loading') {
@@ -48,7 +47,7 @@ function EditExercise({ status, error, containsErrors, removeExercise, saveExerc
   } else if (status === 'succeeded') {
     content = (
       <Alert variant="success">
-        Exercise  was succefully changed to the database.
+        Exercise was succefully changed in the database.
       </Alert>
     );
   }else if (status === 'removed') {

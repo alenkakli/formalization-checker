@@ -1,29 +1,18 @@
 import React from 'react';
-import { Form } from 'react-bootstrap';
+import SymbolsInput from './SymbolsInput';
 import { connect } from 'react-redux';
-import SyntaxError from './SyntaxError';
 import {
   updatePredicates,
   selectPredicatesParsed
 } from '../../redux/addExerciseSlice';
 
 
-function Predicates({ value, error, update }) {
-  return (
-    <Form.Group>
-      <Form.Label>
-        Predicates:
-      </Form.Label>
-      <Form.Control
-        type="text"
-        placeholder="Enter predicates"
-        value={value}
-        onChange={(e) => update(e.target.value)}
-      />
-      <SyntaxError value={value} error={error} />
-    </Form.Group>
-  );
-}
+const Predicates = (props) =>
+  <SymbolsInput
+    symbolsKind="predicate symbols"
+    symbolsSet="𝒫"
+    {...props}
+  />;
 
 const mapStateToProps = selectPredicatesParsed;
 

@@ -3,7 +3,7 @@ import {
   createAsyncThunk
 } from '@reduxjs/toolkit';
 import {fetchData} from "./fetchData";
-
+import { Buffer } from 'buffer';
 
 
 
@@ -11,14 +11,14 @@ import {fetchData} from "./fetchData";
 
 export const logIn = createAsyncThunk(
   'user/logIn',
-  async ({ username, password }, { rejectWithValue }) => {
+  async ({ username, password }, { dispatch, rejectWithValue }) => {
     try {
       let data = {};
       data["username"] = username;
       data["password"] = password;
-      let response = await fetchData(
+      let response = await dispatch(fetchData(
           `/api/exercises/logIn`, 'POST', data
-      );
+      ));
 
     return response;
     } catch (err) {
@@ -29,13 +29,17 @@ export const logIn = createAsyncThunk(
 );
 export const logInByGithub = createAsyncThunk(
   'user/logInGithub',
-  async ( {code},  { rejectWithValue }) => {
+  async ( {code, token},  { dispatch, rejectWithValue }) => {
     try {
       let data = {};
-      data["code"] = code;
-      let response = await fetchData(
+      if (code !== undefined) {
+        data["code"] = code;
+      } else if (token !== undefined) {
+        data["token"] = token;
+      }
+      let response = await dispatch(fetchData(
           `/api/exercises/logIn/github/auth`, 'POST', data
-      );
+      ));
       return response;
     } catch (err) {
       console.error(err.message)
@@ -74,7 +78,7 @@ export const userSlice = createSlice({
       state.error = '';
     },
     setUser: (state) => {
-      let data = JSON.parse(Buffer.from(localStorage.getItem("token").split(".")[1], "base64").toString());
+      let data = JSON.parse(Buffer.from(localStorage.getItem("formalization_checker_token").split(".")[1], "base64").toString());
       state.user = {"username": data.username};
       state.isLoggedIn = true;
       state.isAdmin = data.isAdmin;
@@ -93,7 +97,7 @@ export const userSlice = createSlice({
         state.user = {"username": data.username};
         state.isLoggedIn = true;
         state.isAdmin = data.isAdmin;
-        localStorage["token"] = action.payload.token
+        localStorage["formalization_checker_token"] = action.payload.token
       } else {
         state.error = '';
       }
@@ -114,7 +118,7 @@ export const userSlice = createSlice({
         state.user = {"username": data.username};
         state.isLoggedIn = true;
         state.isAdmin = data.isAdmin;
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("formalization_checker_token", action.payload.token);
       } else {
         state.error = '';
       }
@@ -127,7 +131,7 @@ export const userSlice = createSlice({
 });
 
 export const selectUser = (state) => {
-  return state.user.user.username;
+  return state.user.user?.username;
 }
 
 

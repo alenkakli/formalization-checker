@@ -13,7 +13,7 @@ function LoginForm({
   location, isLoggedIn, status, error, logIn, logInByGithub
 }) {
     useEffect(() => {
-        if (localStorage.getItem("token") !== null) {
+        if (localStorage.getItem("formalization_checker_token") !== null) {
             setUser();
         }
     }, [status, setUser]);

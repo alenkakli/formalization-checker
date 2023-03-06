@@ -5,8 +5,7 @@ export class BinaryFormula {
   }
 
   getFreeVariables() {
-    let a = addAll(new Set(), this.lhs.getFreeVariables());
-    return addAll(a, this.rhs.getFreeVariables())
+    return addAll(this.lhs.getFreeVariables(), this.rhs.getFreeVariables());
   }
 }
 

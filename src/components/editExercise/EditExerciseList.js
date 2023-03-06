@@ -27,7 +27,7 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedE
     let exercises_list = exercises.map((x) => (
       <ListGroup.Item
         as={Link} to={`/edit/${x.exercise_id}`} key={x.exercise_id}
-        variant="primary" action
+        action
         onClick={() => fetchSavedExercise(x.exercise_id)}
       >
         { x.title }
@@ -44,7 +44,7 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedE
 
   return (
     <div>
-      <h2 className="mb-4">Exercises</h2>
+      <h1 className="mb-4">Edit exercise</h1>
       { content }
     </div>
   );

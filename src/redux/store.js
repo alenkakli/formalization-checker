@@ -5,14 +5,18 @@ import progressPropositionsReducer from './progressPropositionsSlice';
 import solveExerciseReducer from './solveExerciseSlice';
 import userReducer from './userSlice';
 import adminsReducer from './adminsSlice';
+import backendReducer from './backendSlice';
 
-export default configureStore({
-  reducer: {
-    addExercise: addExerciseReducer,
-    exercises: exercisesReducer,
-    propositions: progressPropositionsReducer,
-    allUsers: adminsReducer,
-    solveExercise: solveExerciseReducer,
-    user: userReducer
-  }
-});
+export default function (backendUrl) {
+  return configureStore({
+    reducer: {
+      addExercise: addExerciseReducer,
+      exercises: exercisesReducer,
+      propositions: progressPropositionsReducer,
+      allUsers: adminsReducer,
+      solveExercise: solveExerciseReducer,
+      user: userReducer,
+      backend: backendReducer(backendUrl),
+    }
+  });
+}

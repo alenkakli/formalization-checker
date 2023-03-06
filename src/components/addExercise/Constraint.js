@@ -11,7 +11,7 @@ function Constraint({ value, error, update }) {
   return (
     <Form.Group>
       <Form.Label>
-        Preferred model constraints(optional):
+        Global preferred model constraints (optional):
       </Form.Label>
       <Form.Control
         type="text"
@@ -20,6 +20,7 @@ function Constraint({ value, error, update }) {
         as="textarea"
         rows={1}
         onChange={(e) => update(e.target.value)}
+        isInvalid={!!error}
       />
       <SyntaxError value={value} error={error} />
     </Form.Group>
