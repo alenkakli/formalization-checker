@@ -349,7 +349,7 @@ export const {
   removeFormalization,
   updateConstraints,
   updateConstraint,
-    changeStatus
+  changeStatus
 } = addExerciseSlice.actions;
 
 

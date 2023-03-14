@@ -15,7 +15,6 @@ import Description from '../addExercise/Description';
 
 function EditExercise({ status, error, containsErrors, removeExercise, saveExercise }) {
   let content = null;
-  console.log(status)
   if (status === 'idle') {
     content = (
       <Form>
