@@ -18,14 +18,16 @@ function BadExercises({ badExercises, status, error, fetchBadExercises }) {
     if (status === 'loading') {
         content = <Spinner animation="border" variant="primary" />;
     } else if (status === 'succeeded') {
-        let exercises_list = badExercises.map((x) => (
-            <tr key={x.exercise_id}>
+        let exercises_list = badExercises.map((exercise) => (
+            <tr key={exercise.exercise_id}>
                 <td>
-                    <Link to={`/bad_formalizations/${x.exercise_id}`} key={x.exercise_id} >
-                        { x.title }
+                    <Link to={`/bad_formalizations/${exercise.exercise_id}`} key={exercise.exercise_id} >
+                        { exercise.title }
                     </Link>
                 </td>
-                <td>{x.count}</td>
+                <td>{exercise.bad_formalizations}</td>
+                <td>{exercise.students}</td>
+                {/*<td>{exercise.solutions}</td>*/}
             </tr>
         ));
         content =
@@ -34,6 +36,8 @@ function BadExercises({ badExercises, status, error, fetchBadExercises }) {
                 <tr>
                     <th>Exercise</th>
                     <th>Bad formalizations</th>
+                    <th>Students</th>
+                    {/*<th>Solutions</th>*/}
                 </tr>
                 </thead>
                 <tbody>

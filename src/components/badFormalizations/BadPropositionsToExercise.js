@@ -5,7 +5,8 @@ import {
     fetchBadPropositionsToExercise,
     selectStatus,
     selectError,
-    selectExerciseTitle, selectBadPropositions
+    selectExerciseTitle,
+    selectBadPropositions
 } from '../../redux/exercisesSlice';
 import {Link} from "react-router-dom";
 
@@ -27,7 +28,9 @@ function BadPropositionsToExercise({ badPropositions, status, error, exerciseTit
                             { proposition.proposition }
                         </Link>
                     </td>
-                    <td>{ proposition.formalizations }</td>
+                    <td>{ proposition.bad_formalizations }</td>
+                    <td>{ proposition.students }</td>
+                    {/*<td>{ proposition.solutions }</td>*/}
                 </tr>);
         });
         content =
@@ -36,6 +39,8 @@ function BadPropositionsToExercise({ badPropositions, status, error, exerciseTit
                 <tr>
                     <th>Proposition</th>
                     <th>Bad formalizations</th>
+                    <th>Students</th>
+                    {/*<th>Solutions</th>*/}
                 </tr>
                 </thead>
                 <tbody>
