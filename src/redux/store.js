@@ -5,6 +5,7 @@ import progressPropositionsReducer from './progressPropositionsSlice';
 import solveExerciseReducer from './solveExerciseSlice';
 import userReducer from './userSlice';
 import adminsReducer from './adminsSlice';
+import { apiSlice } from './apiSlice';
 
 export default configureStore({
   reducer: {
@@ -13,6 +14,9 @@ export default configureStore({
     propositions: progressPropositionsReducer,
     allUsers: adminsReducer,
     solveExercise: solveExerciseReducer,
-    user: userReducer
-  }
+    user: userReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer
+  },
+  middleware: getDefaultMiddleware =>
+      getDefaultMiddleware().concat(apiSlice.middleware)
 });

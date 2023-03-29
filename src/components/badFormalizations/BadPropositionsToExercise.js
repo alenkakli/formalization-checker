@@ -1,26 +1,29 @@
-import React, { useEffect } from 'react';
-import { Spinner, Alert, Table, Card } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import {
-    fetchBadPropositionsToExercise,
-    selectStatus,
-    selectError,
-    selectExerciseTitle,
-    selectBadPropositions
-} from '../../redux/exercisesSlice';
+import React from 'react';
+import { Spinner, Alert, Table } from 'react-bootstrap';
 import {Link} from "react-router-dom";
+import {useGetBadPropositionsQuery} from "../../redux/apiSlice";
 
-function BadPropositionsToExercise({ badPropositions, status, error, exerciseTitle, match: { params: { exercise_id } }, fetchBadPropositionsToExercise }) {
-    useEffect(() => {
-        fetchBadPropositionsToExercise(exercise_id);
-    }, [fetchBadPropositionsToExercise]);
+export const BadPropositionsToExercise = ({ match }) => {
+    const {exercise_id} = match.params
+    const {
+        data: exercise,
+        isFetching,
+        isSuccess,
+        isError,
+        error
+    } = useGetBadPropositionsQuery(exercise_id)
 
-    let content = null;
-    if (status === 'loading') {
+    let content
+    let badPropositions;
+    let title;
+
+    if (isFetching) {
         content = <Spinner animation="border" variant="primary" />;
-    } else if (status === 'succeeded') {
-        let exercises_list = badPropositions.map((proposition) => {
-            console.log(proposition);
+    } else if (isSuccess) {
+        badPropositions = exercise.propositions;
+        title = exercise.title1;
+
+        let propositions_list = badPropositions.map((proposition) => {
             return (
                 <tr key={proposition.proposition}>
                     <td>
@@ -30,7 +33,6 @@ function BadPropositionsToExercise({ badPropositions, status, error, exerciseTit
                     </td>
                     <td>{ proposition.bad_formalizations }</td>
                     <td>{ proposition.students }</td>
-                    {/*<td>{ proposition.solutions }</td>*/}
                 </tr>);
         });
         content =
@@ -40,15 +42,13 @@ function BadPropositionsToExercise({ badPropositions, status, error, exerciseTit
                     <th>Proposition</th>
                     <th>Bad formalizations</th>
                     <th>Students</th>
-                    {/*<th>Solutions</th>*/}
                 </tr>
                 </thead>
                 <tbody>
-                { exercises_list }
+                { propositions_list }
                 </tbody>
             </Table>;
-
-    } else if (status === 'failed') {
+    } else if (isError) {
         content = (
             <Alert variant="danger">
                 { error }
@@ -58,20 +58,8 @@ function BadPropositionsToExercise({ badPropositions, status, error, exerciseTit
 
     return (
         <div>
-            <h2 className="mb-4">{ exerciseTitle }</h2>
+            <h2 className="mb-4">{ title }</h2>
             {content}
         </div>
     );
 }
-
-const mapStateToProps = (state) => {
-    return {
-        badPropositions: selectBadPropositions(state),
-        status: selectStatus(state),
-        error: selectError(state),
-        exerciseTitle: selectExerciseTitle(state)
-    };
-};
-
-const mapDispatchToProps = { fetchBadPropositionsToExercise };
-export default connect(mapStateToProps, mapDispatchToProps)(BadPropositionsToExercise);

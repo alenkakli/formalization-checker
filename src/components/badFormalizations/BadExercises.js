@@ -1,33 +1,32 @@
-import React, { useEffect } from 'react';
-import { Spinner, Alert, Table} from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import {
-    fetchBadExercises,
-    selectExercises,
-    selectStatus,
-    selectError,
-} from '../../redux/exercisesSlice';
+import React from 'react';
+import {Spinner, Alert, Table} from 'react-bootstrap';
+import {Link} from 'react-router-dom';
+import {useGetBadExercisesQuery} from "../../redux/apiSlice";
 
-function BadExercises({ badExercises, status, error, fetchBadExercises }) {
-    useEffect(() => {
-        fetchBadExercises();
-    }, [fetchBadExercises]);
+export const BadExercises = () => {
+    const {
+        data: badExercises,
+        isLoading,
+        isSuccess,
+        isError,
+        error
+    } = useGetBadExercisesQuery()
 
-    let content = null;
-    if (status === 'loading') {
-        content = <Spinner animation="border" variant="primary" />;
-    } else if (status === 'succeeded') {
+    let content
+
+    if (isLoading) {
+        content = <Spinner animation="border" variant="primary"/>;
+    } else if (isSuccess) {
+
         let exercises_list = badExercises.map((exercise) => (
             <tr key={exercise.exercise_id}>
                 <td>
-                    <Link to={`/bad_formalizations/${exercise.exercise_id}`} key={exercise.exercise_id} >
-                        { exercise.title }
+                    <Link to={`/bad_formalizations/${exercise.exercise_id}`} key={exercise.exercise_id}>
+                        {exercise.title}
                     </Link>
                 </td>
                 <td>{exercise.bad_formalizations}</td>
                 <td>{exercise.students}</td>
-                {/*<td>{exercise.solutions}</td>*/}
             </tr>
         ));
         content =
@@ -37,17 +36,16 @@ function BadExercises({ badExercises, status, error, fetchBadExercises }) {
                     <th>Exercise</th>
                     <th>Bad formalizations</th>
                     <th>Students</th>
-                    {/*<th>Solutions</th>*/}
                 </tr>
                 </thead>
                 <tbody>
-                { exercises_list }
+                {exercises_list}
                 </tbody>
             </Table>
-    } else if (status === 'failed') {
+    } else if (isError) {
         content = (
             <Alert variant="danger">
-                { error }
+                {error}
             </Alert>
         );
     }
@@ -59,14 +57,3 @@ function BadExercises({ badExercises, status, error, fetchBadExercises }) {
         </div>
     );
 }
-
-const mapStateToProps = (state) => {
-    return {
-        badExercises: selectExercises(state),
-        status: selectStatus(state),
-        error: selectError(state),
-    };
-};
-
-const mapDispatchToProps = { fetchBadExercises };
-export default connect(mapStateToProps, mapDispatchToProps)(BadExercises);

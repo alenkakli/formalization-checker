@@ -1,17 +1,18 @@
 import React from 'react';
-import { Form, Button } from 'react-bootstrap';
+import {Form, Button} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import SyntaxError from '../addExercise/SyntaxError';
 import Evaluation from './Evaluation';
 import {
-  update,
-  evaluate,
-  selectSolution
+    update,
+    evaluate,
+    feedback,
+    selectSolution
 } from '../../redux/solveExerciseSlice';
+import Feedback from "./Feedback";
 
 
-function Solution({ exercise_id, proposition_id, proposition,
-                    value, error, update ,  evaluate, user}) {
+function Solution({ exercise_id, proposition_id, proposition, value, error, update, evaluate, user}) {
   return (
     <div className="clearfix mt-4">
       <Form.Group className="clearfix">
@@ -39,17 +40,27 @@ function Solution({ exercise_id, proposition_id, proposition,
         >
           Check
         </Button>
+        {/*<Button*/}
+        {/*  className="mt-1 mr-1 float-right"*/}
+        {/*  variant="primary"*/}
+        {/*  onClick={() => feedback({*/}
+        {/*      proposition_id*/}
+        {/*  })}*/}
+        {/*>*/}
+        {/*    Hint*/}
+        {/*</Button>*/}
         <SyntaxError value={value} error={error} />
       </Form.Group>
+      {/*<Feedback proposition_id={proposition_id} />*/}
       <Evaluation proposition_id={proposition_id} />
     </div>
   );
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return selectSolution(state, ownProps.proposition_id);
+  return selectSolution(state, ownProps.proposition_id)
 };
 
-const mapDispatchToProps = { update, evaluate };
+const mapDispatchToProps = { update, evaluate, feedback };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Solution);

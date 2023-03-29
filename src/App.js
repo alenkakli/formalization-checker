@@ -13,7 +13,7 @@ import SolveExercise from './components/solveExercise/SolveExercise';
 import AddExercise from './components/addExercise/AddExercise';
 import {logOut} from './redux/userSlice';
 import AdminRoute from "./components/login/AdminRoute";
-import Exercises from "./components/studentProgress/Exercises";
+import {Exercises} from "./components/studentProgress/Exercises";
 import UserSolutionsList from "./components/studentProgress/UserSolutionsList";
 import UsersToExercise from "./components/studentProgress/UsersToExercise";
 import ExercisesToUser from "./components/userProgress/ExercisesToUser";
@@ -23,9 +23,9 @@ import {changeStatus} from "./redux/addExerciseSlice";
 import {changeExerciseStatus} from "./redux/exercisesSlice";
 import EditExercise from "./components/editExercise/EditExercise";
 import EditExerciseList from "./components/editExercise/EditExerciseList";
-import BadExercises from "./components/badFormalizations/BadExercises";
-import BadPropositionsToExercise from "./components/badFormalizations/BadPropositionsToExercise";
-import BadFormalizationsToProposition from "./components/badFormalizations/BadFormalizationsToProposition";
+import {BadExercises} from "./components/badFormalizations/BadExercises";
+import {BadPropositionsToExercise} from "./components/badFormalizations/BadPropositionsToExercise";
+import {BadFormalizationsToProposition} from "./components/badFormalizations/BadFormalizationsToProposition";
 
 
 function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isAdmin }) {

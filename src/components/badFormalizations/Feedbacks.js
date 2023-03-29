@@ -1,58 +1,53 @@
-import React, {useEffect} from 'react';
-import {Alert, Card, Form, ListGroup, Spinner} from 'react-bootstrap';
-import { connect } from 'react-redux';
-import {
-    fetchFeedbacksToBadFormalization, selectError,
-    selectFeedbacks, selectStatus
-} from "../../redux/exercisesSlice";
-import AddFeedback from "./AddFeedback";
+import React from 'react';
+import {Alert, ListGroup, Spinner} from 'react-bootstrap';
+import {useGetFeedbackQuery} from "../../redux/apiSlice";
+import {AddFeedback} from "./AddFeedback";
+import {Checkbox} from "./Checkbox";
 
-function Feedbacks({ i, len, bad_formalization_id, representative, feedbacks_list, status, error}) {
-    // useEffect(() => {
-    //     fetchFeedbacksToBadFormalization(bad_formalization_id);
-    // }, []);
+export const Feedbacks = ({ i, bad_formalization_id }) => {
+    const {
+        data: feedback,
+        isFetching,
+        isSuccess,
+        isError,
+        error
+    } = useGetFeedbackQuery(bad_formalization_id)
 
-    console.log(representative)
-    console.log(feedbacks_list)
-    let feedbacks = representative.feedback.map((f) => (
-    // let feedbacks = feedbacks_list.map((f) => (
-        <ListGroup.Item as="li">
-            <div className="d-flex justify-content-between">
-                {f.author}
-                <Form.Check
-                    inline
-                    type="checkbox"
-                    label="Active"
-                    defaultChecked={f.active}
-                />
-            </div>
-            <div>{f.feedback}</div>
-            <div>shown... , rating...</div>
-        </ListGroup.Item>
-    ));
+    let content
+
+    if (isFetching) {
+        content = <Spinner animation="border" variant="primary" />;
+    } else if (isSuccess) {
+
+        content = feedback.map((f) => {
+            return (
+                <ListGroup.Item as="li">
+                    <div className="d-flex justify-content-between">
+                        {f.author}
+                        <Checkbox id={f.feedback_id} value={f.active}/>
+                    </div>
+                    <div>{f.feedback}</div>
+                    <div>shown... , rating...</div>
+                </ListGroup.Item>
+            )
+        });
+
+    } else if (isError) {
+        content = (
+            <Alert variant="danger">
+                { error }
+            </Alert>
+        );
+    }
 
     return (
         <div className="clearfix">
             <h5 className="mt-2 px-4">Feedback</h5>
             <ListGroup as="ol">
-                { feedbacks }
+                { content }
             </ListGroup>
-            <AddFeedback key={i} i={i} len={len} representative={representative} />
+            <AddFeedback key={i} bad_formalization_id={bad_formalization_id} />
         </div>
     );
 
 }
-
-const mapStateToProps = (state) => {
-    return {
-        feedbacks_list: selectFeedbacks(state),
-        status: selectStatus(state),
-        error: selectError(state)
-    };
-};
-
-const mapDispatchToProps = {
-    // fetchFeedbacksToBadFormalization
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Feedbacks);

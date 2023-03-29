@@ -1,70 +1,56 @@
-import React, { useEffect } from 'react';
-import { Spinner, Alert, Table} from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import {
-  fetchAllExercises,
-  selectExercises,
-  selectStatus,
-  selectError
-} from '../../redux/exercisesSlice';
-import {fetchAllUsersToExercise} from "../../redux/progressPropositionsSlice";
+import React from 'react';
+import {Spinner, Alert, Table} from 'react-bootstrap';
+import {Link} from 'react-router-dom';
+import {useGetExercisesQuery} from "../../redux/apiSlice";
 
-function Exercises({ exercises, status, error, fetchAllExercises, fetchAllUsersToExercise }) {
-  useEffect(() => {
-      fetchAllExercises();
-  }, [fetchAllExercises]);
+export const Exercises = () => {
+    const {
+        data: exercises,
+        isLoading,
+        isSuccess,
+        isError,
+        error
+    } = useGetExercisesQuery()
 
-  let content = null;
-  if (status === 'loading') {
-    content = <Spinner animation="border" variant="primary" />;
-  } else if (status === 'succeeded') {
-    let exercises_list = exercises.map((x) => (
-      <tr key={x.exercise_id}>
-        <td>
-          <Link to={`/progress/${x.exercise_id}`} key={x.exercise_id}>
-            { x.title }
-          </Link>
-        </td>
-        <td>{x.attempted}</td>
-    </tr>
-    ));
-  content =
-   <Table striped bordered hover>
-      <thead>
-      <tr>
-        <th>Exercise</th>
-        <th>Students attempted</th>
-      </tr>
-      </thead>
-     <tbody>
-      { exercises_list }
-     </tbody>
-  </Table>
-  } else if (status === 'failed') {
-    content = (
-      <Alert variant="danger">
-        { error }
-      </Alert>
-    );
-  }
+    let content = null;
+    if (isLoading) {
+        content = <Spinner animation="border" variant="primary"/>;
+    } else if (isSuccess) {
+        let exercises_list = exercises.map((exercise) => (
+            <tr key={exercise.exercise_id}>
+                <td>
+                    <Link to={`/progress/${exercise.exercise_id}`} key={exercise.exercise_id}>
+                        {exercise.title}
+                    </Link>
+                </td>
+                <td>{exercise.attempted}</td>
+            </tr>
+        ));
+        content =
+            <Table striped bordered hover>
+                <thead>
+                <tr>
+                    <th>Exercise</th>
+                    <th>Students attempted</th>
+                </tr>
+                </thead>
+                <tbody>
+                {exercises_list}
+                </tbody>
+            </Table>
+    } else if (isError) {
+        content = (
+            <Alert variant="danger">
+                {error}
+            </Alert>
+        );
+    }
 
-  return (
-    <div>
-      <h2 className="mb-4">Student progress</h2>
+    return (
+        <div>
+            <h2 className="mb-4">Student progress</h2>
             {content}
-    </div>
-  );
+        </div>
+    );
+
 }
-
-const mapStateToProps = (state) => {
-  return {
-    exercises: selectExercises(state),
-    status: selectStatus(state),
-    error: selectError(state),
-  };
-};
-
-const mapDispatchToProps = { fetchAllExercises, fetchAllUsersToExercise };
-
-export default connect(mapStateToProps, mapDispatchToProps)(Exercises);
