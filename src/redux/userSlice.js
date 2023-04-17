@@ -72,7 +72,7 @@ export const userSlice = createSlice({
       state.passwordValue = action.payload;
     },
     logOut: (state) => {
-      localStorage.removeItem("token");
+      localStorage.removeItem("formalization_checker_token");
       state.isLoggedIn = false;
       state.user = null;
       state.status = 'idle';
