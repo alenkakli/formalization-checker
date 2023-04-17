@@ -5,22 +5,23 @@ import {
 import {fetchData} from "./fetchData";
 import { Buffer } from 'buffer';
 
+const debugAccessRights = false // todo
 
 
 /* async actions */
 
 export const logIn = createAsyncThunk(
-  'user/logIn',
+  'user/login',
   async ({ username, password }, { dispatch, rejectWithValue }) => {
     try {
       let data = {};
       data["username"] = username;
       data["password"] = password;
       let response = await dispatch(fetchData(
-          `/api/exercises/logIn`, 'POST', data
+          `/api/users/login`, 'POST', data
       ));
 
-    return response;
+      return response;
     } catch (err) {
       console.error(err)
       return rejectWithValue(err.message);
@@ -28,8 +29,8 @@ export const logIn = createAsyncThunk(
   }
 );
 export const logInByGithub = createAsyncThunk(
-  'user/logInGithub',
-  async ( {code, token},  { dispatch, rejectWithValue }) => {
+  'user/loginGithub',
+  async ( {code, token}, { dispatch, rejectWithValue }) => {
     try {
       let data = {};
       if (code !== undefined) {
@@ -38,7 +39,7 @@ export const logInByGithub = createAsyncThunk(
         data["token"] = token;
       }
       let response = await dispatch(fetchData(
-          `/api/exercises/logIn/github/auth`, 'POST', data
+          `/api/users/login/github/auth`, 'POST', data
       ));
       return response;
     } catch (err) {
@@ -56,7 +57,7 @@ export const userSlice = createSlice({
     isLoggedIn: false,
     isAdmin: false,
     user: null,
-    
+
     status: 'idle',
     error: null,
 
@@ -81,7 +82,7 @@ export const userSlice = createSlice({
       let data = JSON.parse(Buffer.from(localStorage.getItem("formalization_checker_token").split(".")[1], "base64").toString());
       state.user = {"username": data.username};
       state.isLoggedIn = true;
-      state.isAdmin = data.isAdmin;
+      state.isAdmin = debugAccessRights || data.isAdmin;
     },
   },
   extraReducers: {
@@ -117,7 +118,7 @@ export const userSlice = createSlice({
         let data = JSON.parse(Buffer.from(action.payload.token.split(".")[1], "base64").toString());
         state.user = {"username": data.username};
         state.isLoggedIn = true;
-        state.isAdmin = data.isAdmin;
+        state.isAdmin = debugAccessRights || data.isAdmin;
         localStorage.setItem("formalization_checker_token", action.payload.token);
       } else {
         state.error = '';
@@ -130,18 +131,16 @@ export const userSlice = createSlice({
   }
 });
 
+/* export actions */
 export const selectUser = (state) => {
   return state.user.user?.username;
 }
 
-
-/* export actions */
 export const {
   updateUsername,
   updatePassword,
   logOut,
   setUser
 } = userSlice.actions;
-
 
 export default userSlice.reducer;

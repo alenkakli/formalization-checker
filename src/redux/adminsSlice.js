@@ -11,7 +11,7 @@ export const fetchAllUsers = createAsyncThunk(
   async (user, { dispatch, rejectWithValue }) => {
     try {
       let response = await dispatch(fetchData(
-          `/api/exercises/allUsers/${user}`, 'GET'
+          `/api/users/${user}`, 'GET'
       ));
     return response;
     } catch (err) {
@@ -26,7 +26,7 @@ export const saveAdmins = createAsyncThunk(
   async (admins, { dispatch, rejectWithValue }) => {
     try {
       let response = await dispatch(fetchData(
-          `/api/exercises/allUsers`, 'POST', admins
+          `/api/users`, 'POST', admins
       ));
 
      return response;

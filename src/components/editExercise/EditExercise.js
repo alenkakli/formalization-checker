@@ -45,15 +45,15 @@ function EditExercise({ status, error, title, containsErrors, removeExercise, sa
   } else if (status === 'loading') {
     content = <Spinner animation="border" variant="primary" />;
   } else if (status === 'succeeded') {
-    content = (
+      content = (
       <Alert variant="success">
-        Exercise was succefully changed in the database.
+        Exercise was successfully changed in the database.
       </Alert>
     );
-  }else if (status === 'removed') {
+  } else if (status === 'removed') {
     content = (
       <Alert variant="success">
-        Exercise  was succefully removed from database.
+        Exercise  was successfully removed from database.
       </Alert>
     );
   } else if (status === 'failed') {

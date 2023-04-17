@@ -1,29 +1,32 @@
 import React from 'react';
 import {Spinner, Alert, Table} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {useGetExercisesQuery} from "../../redux/apiSlice";
+import {useGetBadExercisesQuery} from "../../redux/apiSlice";
 
-export const Exercises = () => {
+export const BadExercises = () => {
     const {
-        data: exercises,
+        data: badExercises,
         isLoading,
         isSuccess,
         isError,
         error
-    } = useGetExercisesQuery()
+    } = useGetBadExercisesQuery()
 
-    let content = null;
+    let content
+
     if (isLoading) {
         content = <Spinner animation="border" variant="primary"/>;
     } else if (isSuccess) {
-        let exercises_list = exercises.map((exercise) => (
+
+        let exercises_list = badExercises.map((exercise) => (
             <tr key={exercise.exercise_id}>
                 <td>
-                    <Link to={`/progress/${exercise.exercise_id}`} key={exercise.exercise_id}>
+                    <Link to={`/bad_formalizations/${exercise.exercise_id}`} key={exercise.exercise_id}>
                         {exercise.title}
                     </Link>
                 </td>
-                <td>{exercise.attempted}</td>
+                <td>{exercise.bad_formalizations}</td>
+                <td>{exercise.students}</td>
             </tr>
         ));
         content =
@@ -31,7 +34,8 @@ export const Exercises = () => {
                 <thead>
                 <tr>
                     <th>Exercise</th>
-                    <th>Students attempted</th>
+                    <th>Bad formalizations</th>
+                    <th>Students</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,9 +52,8 @@ export const Exercises = () => {
 
     return (
         <div>
-            <h2 className="mb-4">Student progress</h2>
+            <h2 className="mb-4">Bad formalizations</h2>
             {content}
         </div>
     );
-
 }

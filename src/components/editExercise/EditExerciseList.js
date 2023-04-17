@@ -13,12 +13,10 @@ import {
 } from '../../redux/addExerciseSlice';
 
 
-function ExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedExercise }) {
+function EditExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedExercise }) {
   useEffect(() => {
-    if (status === 'idle') {
       fetchAllExercises();
-    }
-  }, [status, fetchAllExercises]);
+  }, [fetchAllExercises]);
 
   let content = null;
   if (status === 'loading') {
@@ -44,7 +42,7 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedE
 
   return (
     <div>
-      <h1 className="mb-4">Edit exercise</h1>
+      <h1 className="mb-4">Edit exercises</h1>
       { content }
     </div>
   );
@@ -60,4 +58,4 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = { fetchAllExercises, fetchSavedExercise };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ExerciseList);
+export default connect(mapStateToProps, mapDispatchToProps)(EditExerciseList);

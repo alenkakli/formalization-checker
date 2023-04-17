@@ -149,7 +149,7 @@ const mapStateToProps = (state) => {
     exercise: selectExercise(state),
     status: selectStatus(state),
     error: selectError(state),
-   user: selectUser(state),
+    user: selectUser(state),
   };
 };
 

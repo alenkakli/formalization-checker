@@ -3,21 +3,15 @@ import {Spinner, Alert, Table} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {Link} from "react-router-dom";
 import {
-    selectUsers,
-    selectStatus,
-    selectError, fetchUsersSolutions, selectProposition, fetchAllUsersToExercise, selectExerciseTitle
+    selectUsers, selectStatus, selectError, selectExerciseTitle,
+    fetchUsersSolutions, fetchAllUsersToExercise
 } from "../../redux/progressPropositionsSlice";
 
 
-function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchUsersSolutions, id, title })  {
-
-
-
+function UsersToExercise({ users, status, error, title, match: { params: { exercise_id } }, fetchAllUsersToExercise, fetchUsersSolution })  {
   useEffect( () => {
-    if (status === 'idle') {
-        fetchAllUsersToExercise(id);
-    }
-  }, [status, id, users, fetchAllUsersToExercise]);
+        fetchAllUsersToExercise(exercise_id);
+  }, [exercise_id, fetchAllUsersToExercise]);
 
   let content = null;
   if (status === 'loading') {
@@ -25,35 +19,34 @@ function UsersToExercise({ users, status, error, fetchAllUsersToExercise, fetchU
   } else if (status === 'succeeded') {
       let user_list = []
       for(let i = 0; i < users.length; i++){
-          console.log(users[i])
-          if(users[i].lastattemptcorrec){
+          let date = new Date(users[i].last_attempt_date).toLocaleString('sk-SK')
+          if(users[i].last_attempt_correct){
               user_list.push(<tr key={users[i].user_name}>
                   <td>
-                      <Link to={`/progress/exercise/users/solutions`} key={users[i].user_name} onClick={() => fetchUsersSolutions( {exercise_id: users[i].exercise_id, user_name: users[i].user_name})}>
+                      <Link to={`/progress/${users[i].exercise_id}/${users[i].user_name}`} key={users[i].user_name}>
                           { users[i].user_name }
                       </Link>
                   </td>
                   <td>{users[i].solved} </td>
                   <td>{users[i].attempted} </td>
                   <td>{users[i].successful_attempts}</td>
-                  <td>users[i].attempts}</td>
-                  <td>users[i].huuu}</td>
-                  <td>{users[i].last_attempt_date.split(".")[0].replace("T", " ") + " "} &#x2713;</td>
+                  <td>{users[i].attempts}</td>
+                  <td>{date} &#x2713;</td>
                   </tr>
                   )
           }
           else{
               user_list.push(<tr key={users[i].user_name}>
-                      <td>
-                          <Link to={`/progress/exercise/users/solutions`} key={users[i].user_name} onClick={() => fetchUsersSolutions( {exercise_id: users[i].exercise_id, user_name: users[i].user_name})}>
-                              { users[i].user_name }
-                          </Link>
-                      </td>
-                      <td>{users[i].solved} </td>
-                      <td>{users[i].attempted} </td>
-                      <td>{users[i].successful_attempts}</td>
-                      <td>{users[i].attempts}</td>
-                      <td>{users[i].last_attempt_date.split(".")[0].replace("T", " ") + " "} &#x2715;</td>
+                  <td>
+                      <Link to={`/progress/${users[i].exercise_id}/${users[i].user_name}`} key={users[i].user_name}>
+                          { users[i].user_name }
+                      </Link>
+                  </td>
+                  <td>{users[i].solved} </td>
+                  <td>{users[i].attempted} </td>
+                  <td>{users[i].successful_attempts}</td>
+                  <td>{users[i].attempts}</td>
+                  <td>{date} &#x2715;</td>
                   </tr>
               )
           }

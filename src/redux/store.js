@@ -5,6 +5,7 @@ import progressPropositionsReducer from './progressPropositionsSlice';
 import solveExerciseReducer from './solveExerciseSlice';
 import userReducer from './userSlice';
 import adminsReducer from './adminsSlice';
+import { apiSlice } from './apiSlice';
 import backendReducer from './backendSlice';
 
 export default function (backendUrl) {
@@ -17,6 +18,9 @@ export default function (backendUrl) {
       solveExercise: solveExerciseReducer,
       user: userReducer,
       backend: backendReducer(backendUrl),
-    }
+      [apiSlice.reducerPath]: apiSlice.reducer,
+    },
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware().concat(apiSlice.middleware)
   });
 }

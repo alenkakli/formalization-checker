@@ -1,6 +1,6 @@
 import {
-  createSlice,
-  createAsyncThunk
+    createSlice,
+    createAsyncThunk
 } from '@reduxjs/toolkit';
 import { fetchData } from './fetchData';
 
@@ -8,69 +8,62 @@ import { fetchData } from './fetchData';
 /* async actions */
 
 export const fetchAllExercises = createAsyncThunk(
-  'exercises/fetchAllExercises',
-  async (_, { dispatch, rejectWithValue }) => {
-    try {
-      let response = await dispatch(fetchData('/api/exercises', 'GET'));
-      return response;
-    } catch (err) {
-      return rejectWithValue(err.message);
+    'exercises/fetchAllExercises',
+    async (_, { dispatch, rejectWithValue }) => {
+        try {
+            let response = await dispatch(fetchData('/api/exercises', 'GET'));
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.message);
+        }
     }
-  }
 );
-
 
 /* slice */
 export const exercisesSlice = createSlice({
-  name: 'exercises',
-  initialState: {
-    exercises: [],
-    status: 'idle',
-    error: null
-  },
-  reducers: {changeExerciseStatus: {
-      reducer: (state, action) => {
-        state.added = null;
-        state.status = 'idle';
-      }
-    },},
-  extraReducers: {
-    [fetchAllExercises.pending]: (state, action) => {
-      state.status = 'loading';
+    name: 'exercises',
+    initialState: {
+        exercises: [],
+        status: 'idle',
+        error: null
     },
-    [fetchAllExercises.fulfilled]: (state, action) => {
-      state.status = 'succeeded';
-      state.exercises = action.payload;
-    },
-    [fetchAllExercises.rejected]: (state, action) => {
-      state.status = 'failed';
-      state.error = action.payload;
+    reducers: {changeExerciseStatus: {
+            reducer: (state, action) => {
+                state.status = 'idle';
+            }
+        },},
+    extraReducers: {
+        [fetchAllExercises.pending]: (state, action) => {
+            state.status = 'loading';
+        },
+        [fetchAllExercises.fulfilled]: (state, action) => {
+            state.status = 'succeeded';
+            state.exercises = action.payload;
+        },
+        [fetchAllExercises.rejected]: (state, action) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        }
     }
-  }
 });
 
 /* export actions */
 export const {
-  changeExerciseStatus
+    changeExerciseStatus
 } = exercisesSlice.actions;
 
 /* selectors */
 
 export const selectExercises = (state) => {
-  return state.exercises.exercises;
-};
-
-export const selectPropositions = (state) => {
-  return state.exercises;
+    return state.exercises.exercises;
 };
 
 export const selectStatus = (state) => {
-  return state.exercises.status;
+    return state.exercises.status;
 };
 
 export const selectError = (state) => {
-  return state.exercises.error;
+    return state.exercises.error;
 };
-
 
 export default exercisesSlice.reducer;

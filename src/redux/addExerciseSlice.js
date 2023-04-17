@@ -56,7 +56,7 @@ export const saveExercise = createAsyncThunk(
 );
 
 export const removeExercise = createAsyncThunk(
-  'saveExercise',
+  'removeExercise',
   async (_, { dispatch, getState, rejectWithValue }) => {
     let exercise = selectExercise(getState());
     if (!exercise) {
@@ -64,7 +64,7 @@ export const removeExercise = createAsyncThunk(
     }
     try {
       let response = await dispatch(fetchData(
-        '/api/exercises/edit/remove', 'POST', exercise
+        '/api/exercises/remove', 'DELETE', exercise
       ));
       return response;
     } catch (err) {
@@ -334,6 +334,7 @@ export const addExerciseSlice = createSlice({
 
 
 /* export actions */
+
 export const {
   updateExerciseTitle,
   updateDescription,
@@ -348,7 +349,7 @@ export const {
   removeFormalization,
   updateConstraints,
   updateConstraint,
-    changeStatus
+  changeStatus
 } = addExerciseSlice.actions;
 
 
@@ -493,6 +494,7 @@ export const selectFormalization = createSelector(
     return { value, error };
   }
 );
+
 export const selectConstraints = createSelector(
   [
     (state, i, j) => state.addExercise.propositions[i].constraints[j],
@@ -509,6 +511,7 @@ export const selectConstraints = createSelector(
     return { value, error };
   }
 );
+
 export const selectConstraint = createSelector(
   [
     (state) => state.addExercise.constraint,
@@ -566,6 +569,5 @@ export const checkExercise = (state) => {
   let exercise = selectExercise(state);
   return !exercise;
 };
-
 
 export default addExerciseSlice.reducer;

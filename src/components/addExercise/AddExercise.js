@@ -18,7 +18,7 @@ function AddExercise({ status, error, containsErrors, title, addExercise, added}
       if (added) {
           content = (
               <Alert variant="success">
-                  Exercise <b>{ title }</b> was succefully added to the database.
+                  Exercise <b>{ title }</b> was successfully added to the database.
               </Alert>
               );
       }

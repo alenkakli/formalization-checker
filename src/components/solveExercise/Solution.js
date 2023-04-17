@@ -1,17 +1,19 @@
 import React from 'react';
-import { Form, Button } from 'react-bootstrap';
+import {Form, Button} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import SyntaxError from '../addExercise/SyntaxError';
 import Evaluation from './Evaluation';
 import {
-  update,
-  evaluate,
-  selectSolution
+    update,
+    evaluate,
+    feedback,
+    selectSolution
 } from '../../redux/solveExerciseSlice';
+import Feedback from "./Feedback";
 
 
 function Solution({ exercise_id, proposition_id, proposition,
-                    value, error, update ,  evaluate, user, onChange}) {
+                    value, error, update, evaluate, user, onChange }) {
 
   const handleChange = (value) => {
     update(value, proposition_id);
@@ -55,9 +57,9 @@ function Solution({ exercise_id, proposition_id, proposition,
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return selectSolution(state, ownProps.proposition_id);
+  return selectSolution(state, ownProps.proposition_id)
 };
 
-const mapDispatchToProps = { update, evaluate };
+const mapDispatchToProps = { update, evaluate, feedback };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Solution);
