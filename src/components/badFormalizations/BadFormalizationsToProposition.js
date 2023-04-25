@@ -2,7 +2,7 @@ import React from 'react';
 import {Spinner, Alert} from 'react-bootstrap';
 import {
     useGetBadFormalizationsQuery
-} from "../../redux/apiSlice";
+} from "../../redux/badFormalizationsSlice";
 import {Cards} from "./Cards";
 
 export const BadFormalizationsToProposition = ({ match }) => {

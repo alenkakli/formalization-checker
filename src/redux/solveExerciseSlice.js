@@ -22,7 +22,7 @@ export const fetchExercise = createAsyncThunk(
   async ({exercise_id, user_name}, { rejectWithValue }) => {
     try {
       let response = await fetchData(
-        `/api/exercises/${exercise_id}`, 'POST', { username: user_name}
+        `/api/exercises/${exercise_id}`, 'POST', { username: user_name }
       );
       return response;
     } catch (err) {
@@ -46,12 +46,38 @@ export const evaluate = createAsyncThunk(
   }
 );
 
-export const feedback = createAsyncThunk(
-  'solveExercise/feedback',
-  async ({ proposition_id }, { rejectWithValue }) => {
+export const fetchActiveFeedbacks = createAsyncThunk(
+  'solveExercise/fetchFeedback',
+  async ({ proposition_id, bad_formalization_id}, { rejectWithValue }) => {
     try {
       let response = await fetchData(
-        `/api/exercises/feedback/${proposition_id}`, 'GET');
+        `/api/feedbacks/active/bad_formalization/${bad_formalization_id}`, 'GET');
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const feedbackRating = createAsyncThunk(
+  'solveExercise/feedbackRating',
+  async ({ proposition_id, index, feedback_id, solution_id }, { rejectWithValue }) => {
+    try {
+      let response = await fetchData(
+        `/api/feedbacks/rating`, 'POST', {feedback_id, solution_id});
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const updateRating = createAsyncThunk(
+  'solveExercise/rating',
+  async ({ id, rating }, { rejectWithValue }) => {
+    try {
+      let response = await fetchData(
+        `/api/feedbacks/rating/${id}`, 'PATCH', {rating});
       return response;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -72,13 +98,14 @@ export const solveExerciseSlice = createSlice({
     predicates: [],
     functions: [],
 
-    solutions: {}
+    solutions: {},
+    solution: null
   },
   reducers: {
     update: {
       reducer: (state, action) => {
         const { value, id } = action.payload;
-        state.solutions[id].solution = value;
+        state.solutions[id].solution = value.replace(/(\r\n|\n|\r)/gm, "");
       },
       prepare: (value, id) => {
         return { payload: { value, id } };
@@ -100,9 +127,7 @@ export const solveExerciseSlice = createSlice({
           evaluation: null,
           status: 'idle',
           error: null,
-          feedback: null,
-          f_status: 'idle',
-          f_error: null
+          feedbacks: []
         };
         if(p.solution === null || p.solution === undefined){
           state.solutions[p.proposition_id]["solution"] = '';
@@ -116,6 +141,7 @@ export const solveExerciseSlice = createSlice({
       state.status = 'failed';
       state.error = action.payload;
     },
+
     [evaluate.pending]: (state, action) => {
       let { proposition_id } = action.meta.arg;
       let solution = state.solutions[proposition_id];
@@ -135,24 +161,25 @@ export const solveExerciseSlice = createSlice({
       solution.status = 'failed';
       solution.error = error;
     },
-    [feedback.pending]: (state, action) => {
-      let { proposition_id } = action.meta.arg;
-      let solution = state.solutions[proposition_id];
-      solution.f_status = 'loading';
+
+    [fetchActiveFeedbacks.pending]: (state, action) => {
     },
-    [feedback.fulfilled]: (state, action) => {
+    [fetchActiveFeedbacks.fulfilled]: (state, action) => {
       let { proposition_id } = action.meta.arg;
-      let feedback = action.payload;
       let solution = state.solutions[proposition_id];
-      solution.f_status = 'succeeded';
-      solution.feedback = feedback;
+      solution.feedbacks = action.payload;
     },
-    [feedback.rejected]: (state, action) => { // todo, asi zmenit
-      let { proposition_id } = action.meta.arg;
-      let { error } = action.payload;
-      let solution = state.solutions[proposition_id];
-      solution.f_status = 'failed';
-      solution.f_error = error;
+    [fetchActiveFeedbacks.rejected]: (state, action) => {
+    },
+
+    [feedbackRating.pending]: (state, action) => {
+    },
+    [feedbackRating.fulfilled]: (state, action) => {
+      let { proposition_id, index } = action.meta.arg;
+      let feedback = state.solutions[proposition_id].feedbacks[index];
+      feedback.rating_id = action.payload;
+    },
+    [feedbackRating.rejected]: (state, action) => {
     }
   }
 });
@@ -202,16 +229,8 @@ export const selectEvalError = (state, id) => {
 };
 
 export const selectFeedbacks = (state, id) => {
-  return state.solveExercise.solutions[id].feedback;
+  return state.solveExercise.solutions[id].feedbacks;
 };
 
-
-export const selectFeedbacksStatus = (state, id) => {
-  return state.solveExercise.solutions[id].f_status;
-};
-
-export const selectFeedbacksError = (state, id) => {
-  return state.solveExercise.solutions[id].f_error;
-};
 
 export default solveExerciseSlice.reducer;

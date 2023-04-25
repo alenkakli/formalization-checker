@@ -1,42 +1,90 @@
-import React from 'react';
-import { Spinner, Alert } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import {
-    selectFeedbacks, selectFeedbacksStatus, selectFeedbacksError
-} from '../../redux/solveExerciseSlice';
+import React, {useState} from 'react';
+import { Alert, Row, Col, Container} from 'react-bootstrap';
+import {HandThumbsDown, HandThumbsDownFill, HandThumbsUp, HandThumbsUpFill} from "react-bootstrap-icons";
+import {updateRating} from "../../redux/solveExerciseSlice";
+import {connect} from "react-redux";
 
-// TODO, zobrazovanie feedbacku pre studenta v procese
-function Feedback({ feedbacks, status, error }) {
-    let content = null;
-    if (status === 'loading') {
-        content = <Spinner animation="border" variant="primary" />;
-    } else if (status === 'succeeded') {
-        console.log(feedbacks)
-        if (feedbacks.length > 0) {
-            content = (
-                <Alert variant="info">
-                    <div className='d-inline-block mr-2'> 1 / {feedbacks.length} </div>
-                    <div className='d-inline-block'> {feedbacks[0].feedback} </div>
-                </Alert>
-            );
+function Feedback({ feedback, updateRating }) {
+    let content;
+    const [activeBtn, setActiveBtn] = useState("none");
+    const [thumbsUp, setThumbsUp] = useState(<HandThumbsUp/>);
+    const [thumbsDown, setThumbsDown] = useState(<HandThumbsDown/>);
+
+    const handleLikeClick = () => {
+        if (activeBtn === "none" || activeBtn === "dislike") {
+            setActiveBtn("like");
+            setThumbsUp(<HandThumbsUpFill/>)
+            setThumbsDown(<HandThumbsDown/>)
+            updateRating({
+                id: feedback.rating_id,
+                rating: 1
+            });
+        } else if (activeBtn === 'like'){
+            setActiveBtn("none");
+            setThumbsUp(<HandThumbsUp/>)
+            updateRating({
+                id: feedback.rating_id,
+                rating: 0
+            });
         }
-    } else if (status === 'failed') {
-        content = (
-            <Alert variant="danger">
-                { error }
-            </Alert>
-        );
-    }
+    };
 
-    return content;
+    const handleDislikeClick = () => {
+        if (activeBtn === "none" || activeBtn === "like") {
+            setActiveBtn("dislike");
+            setThumbsDown(<HandThumbsDownFill/>)
+            setThumbsUp(<HandThumbsUp/>)
+            updateRating({
+                id: feedback.rating_id,
+                rating: -1
+            });
+        } else if (activeBtn === 'dislike'){
+            setActiveBtn("none");
+            setThumbsDown(<HandThumbsDown/>)
+            updateRating({
+                id: feedback.rating_id,
+                rating: 0
+            });
+        }
+    };
+
+    const like = (
+        <button
+            className={`btn ${activeBtn === "like" ? "like-active" : ""}`}
+            key={feedback.feedback_id}
+            onClick={handleLikeClick} >
+            {thumbsUp}
+        </button>
+    )
+
+    const dislike = (
+        <button
+            className={`btn ${activeBtn === "dislike" ? "dislike-active" : ""}`}
+            key={feedback.feedback_id}
+            onClick={handleDislikeClick} >
+            {thumbsDown}
+        </button>
+    )
+
+    content = (
+        <Row className="p-0 mb-1">
+            <Col className="p-0">
+                <Alert variant="info" className="mb-0">
+                    {feedback.feedback}
+                </Alert>
+            </Col>
+            <Col className="p-0" md="auto">{like}</Col>
+            <Col className="p-0" md="auto">{dislike}</Col>
+        </Row>
+    )
+
+    return (
+        <Container>
+            { content }
+        </Container>
+    );
 }
 
-const mapStateToProps = (state, ownProps) => {
-    return {
-        feedbacks: selectFeedbacks(state, ownProps.proposition_id),
-        status: selectFeedbacksStatus(state, ownProps.proposition_id),
-        error: selectFeedbacksError(state, ownProps.proposition_id)
-    };
-};
+const mapDispatchToProps = { updateRating };
 
-export default connect(mapStateToProps)(Feedback);
+export default connect(null, mapDispatchToProps)(Feedback);

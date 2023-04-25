@@ -1,7 +1,7 @@
 import React from 'react';
 import { Spinner, Alert, Table } from 'react-bootstrap';
 import {Link} from "react-router-dom";
-import {useGetBadPropositionsQuery} from "../../redux/apiSlice";
+import {useGetBadPropositionsQuery} from "../../redux/badFormalizationsSlice";
 
 export const BadPropositionsToExercise = ({ match }) => {
     const {exercise_id} = match.params

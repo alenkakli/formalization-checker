@@ -1,30 +1,27 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ListGroup, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
-  fetchAllExercises,
-  selectExercises,
-  selectStatus,
-  selectError
-} from '../../redux/exercisesSlice';
-import {
   fetchExercise
 } from '../../redux/solveExerciseSlice';
 import {selectUser} from "../../redux/userSlice";
+import {useGetExercisesQuery} from "../../redux/badFormalizationsSlice";
 
 
-function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExercise, username }) {
-  useEffect(() => {
-    if (status === 'idle') {
-      fetchAllExercises();
-    }
-  }, [status, fetchAllExercises]);
+function ExerciseList({ fetchExercise, username }) {
+  const {
+    data: exercises,
+    isLoading,
+    isSuccess,
+    isError,
+    error
+  } = useGetExercisesQuery(undefined, {refetchOnMountOrArgChange: true})
 
   let content = null;
-  if (status === 'loading') {
+  if (isLoading) {
     content = <Spinner animation="border" variant="primary" />;
-  } else if (status === 'succeeded') {
+  } else if (isSuccess) {
     let exercises_list = exercises.map((x) => (
       <ListGroup.Item
         as={Link} to={`/solve/${x.exercise_id}`} key={x.exercise_id}
@@ -35,7 +32,7 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExerci
       </ListGroup.Item>
     ));
     content = <ListGroup>{ exercises_list }</ListGroup>;
-  } else if (status === 'failed') {
+  } else if (isError) {
     content = (
       <Alert variant="danger">
         { error }
@@ -53,13 +50,10 @@ function ExerciseList({ exercises, status, error, fetchAllExercises, fetchExerci
 
 const mapStateToProps = (state) => {
   return {
-    exercises: selectExercises(state),
-    username: selectUser(state),
-    status: selectStatus(state),
-    error: selectError(state),
+    username: selectUser(state)
   };
 };
 
-const mapDispatchToProps = { fetchAllExercises, fetchExercise };
+const mapDispatchToProps = { fetchExercise };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExerciseList);

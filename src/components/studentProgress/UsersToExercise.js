@@ -3,12 +3,15 @@ import {Spinner, Alert, Table} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {Link} from "react-router-dom";
 import {
-    selectUsers, selectStatus, selectError, selectExerciseTitle,
-    fetchUsersSolutions, fetchAllUsersToExercise
+    selectUsers,
+    selectStatus,
+    selectError,
+    selectExerciseTitle,
+    fetchAllUsersToExercise
 } from "../../redux/progressPropositionsSlice";
 
 
-function UsersToExercise({ users, status, error, title, match: { params: { exercise_id } }, fetchAllUsersToExercise, fetchUsersSolution })  {
+function UsersToExercise({ users, status, error, title, match: { params: { exercise_id } }, fetchAllUsersToExercise })  {
   useEffect( () => {
         fetchAllUsersToExercise(exercise_id);
   }, [exercise_id, fetchAllUsersToExercise]);
@@ -101,6 +104,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = { fetchUsersSolutions, fetchAllUsersToExercise };
+const mapDispatchToProps = { fetchAllUsersToExercise };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UsersToExercise);

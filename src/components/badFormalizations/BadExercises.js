@@ -1,16 +1,16 @@
 import React from 'react';
 import {Spinner, Alert, Table} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {useGetBadExercisesQuery} from "../../redux/apiSlice";
+import {useGetBadExercisesQuery} from "../../redux/badFormalizationsSlice";
 
 export const BadExercises = () => {
     const {
-        data: badExercises,
+        data: exercises,
         isLoading,
         isSuccess,
         isError,
         error
-    } = useGetBadExercisesQuery()
+    } = useGetBadExercisesQuery(undefined, {refetchOnMountOrArgChange: true})
 
     let content
 
@@ -18,7 +18,7 @@ export const BadExercises = () => {
         content = <Spinner animation="border" variant="primary"/>;
     } else if (isSuccess) {
 
-        let exercises_list = badExercises.map((exercise) => (
+        let exercises_list = exercises.map((exercise) => (
             <tr key={exercise.exercise_id}>
                 <td>
                     <Link to={`/bad_formalizations/${exercise.exercise_id}`} key={exercise.exercise_id}>

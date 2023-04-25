@@ -20,7 +20,6 @@ import ExercisesToUser from "./components/userProgress/ExercisesToUser";
 import UserList from "./components/addAdmins/UserList";
 import {BASE_NAME} from "./config";
 import {changeStatus} from "./redux/addExerciseSlice";
-import {changeExerciseStatus} from "./redux/exercisesSlice";
 import EditExercise from "./components/editExercise/EditExercise";
 import EditExerciseList from "./components/editExercise/EditExerciseList";
 import {BadExercises} from "./components/badFormalizations/BadExercises";
@@ -28,7 +27,7 @@ import {BadPropositionsToExercise} from "./components/badFormalizations/BadPropo
 import {BadFormalizationsToProposition} from "./components/badFormalizations/BadFormalizationsToProposition";
 
 
-function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isAdmin }) {
+function App({ isLoggedIn, user, logOut, changeStatus, isAdmin }) {
   let loginInfo = null;
   if (isLoggedIn) {
     loginInfo = (
@@ -54,7 +53,7 @@ function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isA
           <div className="App">
             <Navbar bg="dark" variant="dark" sticky="top">
               <Nav className="mr-auto">
-                <Nav.Link className="px-4" as={Link} to="/" onClick={() => changeExerciseStatus()}>
+                <Nav.Link className="px-4" as={Link} to="/">
                   Home
                 </Nav.Link>
                 <Nav.Link className="px-4" as={Link} to="/progress">
@@ -89,7 +88,7 @@ function App({ isLoggedIn, user, logOut, changeStatus, changeExerciseStatus, isA
       <div className="App">
         <Navbar bg="dark" variant="dark" sticky="top">
           <Nav className="mr-auto">
-            <Nav.Link className="px-4" as={Link} to="/" onClick={() => changeExerciseStatus()}>
+            <Nav.Link className="px-4" as={Link} to="/">
               Home
             </Nav.Link>
             <Nav.Link className="px-4" as={Link} to="/add">
@@ -148,6 +147,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = { logOut, changeStatus, changeExerciseStatus };
+const mapDispatchToProps = { logOut, changeStatus };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

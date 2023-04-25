@@ -71,9 +71,8 @@ export const progressPropositionsSlice = createSlice({
     },
     [fetchAllUsersToExercise.fulfilled]: (state, action) => {
       state.status = 'succeeded';
-      state.users = action.payload;
-      if (!state.users.isEmpty)
-        state.title = state.users[0].title;
+      state.title = action.payload.title;
+      state.users = action.payload.users;
     },
     [fetchAllUsersToExercise.rejected]: (state, action) => {
       state.status = 'failed';
@@ -97,9 +96,8 @@ export const progressPropositionsSlice = createSlice({
     },
     [fetchUsersSolutions.fulfilled]: (state, action) => {
       state.status = 'succeeded';
-      state.solutions = action.payload;
-      if (!state.solutions.isEmpty)
-        state.title = state.solutions[0].title;
+      state.title = action.payload.title;
+      state.solutions = action.payload.solutions;
     },
     [fetchUsersSolutions.rejected]: (state, action) => {
       state.status = 'failed';
