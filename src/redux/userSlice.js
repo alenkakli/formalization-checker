@@ -8,7 +8,7 @@ import { Buffer } from 'buffer';
 const debugAccessRights = false // todo
 
 
-/* async actions */
+/* Async actions */
 
 export const logIn = createAsyncThunk(
   'user/login',
@@ -50,7 +50,48 @@ export const logInByGithub = createAsyncThunk(
 );
 
 
-/* slice */
+/* Common token processing */
+
+function userFromToken(token) {
+  if (token === null) {
+    return undefined;
+  }
+  try {
+    const { username, isAdmin } =
+      JSON.parse(Buffer.from(token.split(".")[1], "base64").toString());
+    return {
+      user: { username },
+      isLoggedIn: true,
+      isAdmin: debugAccessRights || isAdmin,
+    };
+  } catch (_e) {
+    return undefined;
+  }
+}
+
+const getStoredUser = () =>
+  userFromToken(localStorage.getItem("formalization_checker_token"));
+
+function loginFulfilled(state, action) {
+  state.status = 'succeeded';
+  state.usernameValue = '';
+  state.passwordValue = '';
+  if (action.payload) {
+    const userInfo = userFromToken(action.payload.token);
+    if (userInfo) {
+      state.user = userInfo.user;
+      state.isLoggedIn = userInfo.isLoggedIn;
+      state.isAdmin = userInfo.isAdmin;
+      localStorage.setItem("formalization_checker_token", action.payload.token);
+    }
+  } else {
+    state.error = '';
+  }
+}
+
+
+/* Slice */
+
 export const userSlice = createSlice({
   name: 'user',
   initialState: {
@@ -62,7 +103,8 @@ export const userSlice = createSlice({
     error: null,
 
     usernameValue: '',
-    passwordValue: ''
+    passwordValue: '',
+    ...(getStoredUser() ?? {})
   },
   reducers: {
     updateUsername: (state, action) => {
@@ -79,30 +121,19 @@ export const userSlice = createSlice({
       state.error = '';
     },
     setUser: (state) => {
-      let data = JSON.parse(Buffer.from(localStorage.getItem("formalization_checker_token").split(".")[1], "base64").toString());
-      state.user = {"username": data.username};
-      state.isLoggedIn = true;
-      state.isAdmin = debugAccessRights || data.isAdmin;
+      const savedUser = getStoredUser();
+      if (savedUser) {
+        state.user = savedUser.user;
+        state.isLoggedIn = savedUser.isLoggedIn;
+        state.isAdmin = savedUser.isAdmin;
+      }
     },
   },
   extraReducers: {
     [logIn.pending]: (state, action) => {
       state.status = 'loading';
     },
-    [logIn.fulfilled]: (state, action) => {
-      state.status = 'succeeded';
-      state.usernameValue = '';
-      state.passwordValue = '';
-      if (action.payload) {
-        let data = JSON.parse(Buffer.from(action.payload.token.split(".")[1], "base64").toString());
-        state.user = {"username": data.username};
-        state.isLoggedIn = true;
-        state.isAdmin = data.isAdmin;
-        localStorage["formalization_checker_token"] = action.payload.token
-      } else {
-        state.error = '';
-      }
-    },
+    [logIn.fulfilled]: loginFulfilled,
     [logIn.rejected]: (state, action) => {
       state.status = 'failed';
       state.error = 'No such combination of username and password found.';
@@ -110,20 +141,7 @@ export const userSlice = createSlice({
     [logInByGithub.pending]: (state, action) => {
       state.status = 'loading';
     },
-    [logInByGithub.fulfilled]: (state, action) => {
-      state.status = 'succeeded';
-      state.usernameValue = '';
-      state.passwordValue = '';
-      if (action.payload) {
-        let data = JSON.parse(Buffer.from(action.payload.token.split(".")[1], "base64").toString());
-        state.user = {"username": data.username};
-        state.isLoggedIn = true;
-        state.isAdmin = debugAccessRights || data.isAdmin;
-        localStorage.setItem("formalization_checker_token", action.payload.token);
-      } else {
-        state.error = '';
-      }
-    },
+    [logInByGithub.fulfilled]: loginFulfilled,
     [logInByGithub.rejected]: (state, action) => {
       state.status = 'failed';
       state.error = 'No such combination of username and password found.';
