@@ -4,12 +4,17 @@ import { BACKEND_URL } from "../config";
 export const apiSlice = createApi({
 
     reducerPath: 'api',
-    baseQuery: fetchBaseQuery({
-        baseUrl: `${BACKEND_URL}/api`,
-        prepareHeaders: (headers) => {
-            headers.set("Authorization", "Bearer " + localStorage.getItem("formalization_checker_token"))
-            return headers;
-        }}),
+    baseQuery: function _q(args, api, extraOptions) {
+      if (_q.queryFn === undefined) {
+        _q.queryFn = fetchBaseQuery({
+          baseUrl: `${api.getState().backend.url}/api`,
+          prepareHeaders: (headers) => {
+              headers.set("Authorization", "Bearer " + localStorage.getItem("formalization_checker_token"))
+              return headers;
+          }})
+      }
+      return _q.queryFn(args, api, extraOptions)
+    },
     tagTypes: ['Exercises', 'Feedbacks'],
     endpoints: builder => ({
         getExercises: builder.query({
