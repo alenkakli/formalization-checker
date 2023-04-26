@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Form} from 'react-bootstrap';
-import {useUpdateFeedbackMutation} from "../../redux/apiSlice";
+import {useUpdateFeedbackMutation} from "../../redux/feedbacksSlice";
 
 export const Checkbox = ({ value, id }) => {
     const [

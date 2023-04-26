@@ -3,59 +3,60 @@ import { Spinner, Alert, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import Solution from './Solution';
 import {
-  selectExercise,
-  selectStatus,
-  selectError,
-  fetchExercise
+    selectExercise,
+    selectStatus,
+    selectError,
+    fetchExercise
 } from '../../redux/solveExerciseSlice';
 import { useParams } from 'react-router';
 import {selectUser} from "../../redux/userSlice";
 
+export const SolveExercise = ({ match, exercise, status, error, fetchExercise, user, onChange }) => {
 
-export function SolveExercise({ match, exercise, status, error, fetchExercise, user, exerciseId, onChange })  {
+    let { id } = match.params;
 
-  useEffect(() => {
-    if (status === 'idle') {
-      fetchExercise({exercise_id : exerciseId, username : user});
+    useEffect(() => {
+        if (status === 'idle') {
+            fetchExercise({ exercise_id: id, username: user });
+        }
+    }, [status, id, exercise, fetchExercise, user]);
+
+    let content = null;
+    if (status === 'loading') {
+        content = <Spinner animation="border" variant="primary" />;
+    } else if (status === 'succeeded') {
+        const propositions_list = exercise.propositions.map((x) => (
+            <Solution
+              key={x.proposition_id}
+              exercise_id={id}
+              proposition_id={x.proposition_id}
+              proposition={x.proposition}
+              user={user}
+              onChange={onChange}
+            />
+        ));
+        content = (
+            <div>
+                <h2>{ exercise.title }</h2>
+                <p>{ exercise.description }</p>
+                <h5>Language ℒ</h5>
+                <p>𝒞<sub>ℒ</sub> = {"{ "}{ exercise.constants }{" }"}</p>
+                <p>𝒫<sub>ℒ</sub> = {"{ "}{ exercise.predicates }{" }"}</p>
+                <p>ℱ<sub>ℒ</sub> = {"{ "}{ exercise.functions }{" }"}</p>
+                { acceptedSymbolsView }
+                <h5>Propositions</h5>
+                { propositions_list }
+            </div>
+        );
+    } else if (status === 'failed') {
+        content = (
+            <Alert variant="danger">
+                {error}
+            </Alert>
+        );
     }
-  }, [status, exerciseId, exercise, fetchExercise, user]);
 
-  let content = null;
-  if (status === 'loading') {
-    content = <Spinner animation="border" variant="primary" />;
-  } else if (status === 'succeeded') {
-    const propositions_list = exercise.propositions.map((x) => (
-      <Solution
-        key={x.proposition_id}
-        exercise_id={exerciseId}
-        proposition_id={x.proposition_id}
-        proposition={x.proposition}
-        user={user}
-        onChange={onChange}
-      />
-    ));
-    content = (
-      <div>
-        <h2>{ exercise.title }</h2>
-        <p>{ exercise.description }</p>
-        <h5>Language ℒ</h5>
-        <p>𝒞<sub>ℒ</sub> = {"{ "}{ exercise.constants }{" }"}</p>
-        <p>𝒫<sub>ℒ</sub> = {"{ "}{ exercise.predicates }{" }"}</p>
-        <p>ℱ<sub>ℒ</sub> = {"{ "}{ exercise.functions }{" }"}</p>
-        { acceptedSymbolsView }
-        <h5>Propositions</h5>
-        { propositions_list }
-      </div>
-    );
-  } else if (status === 'failed') {
-    content = (
-      <Alert variant="danger">
-        {error}
-      </Alert>
-    );
-  }
-
-  return content;
+    return content;
 }
 
 function SolveExercise1(props) {
@@ -145,12 +146,12 @@ const acceptedSymbolsView = (
 );
 
 const mapStateToProps = (state) => {
-  return {
-    exercise: selectExercise(state),
-    status: selectStatus(state),
-    error: selectError(state),
-    user: selectUser(state),
-  };
+    return {
+        exercise: selectExercise(state),
+        status: selectStatus(state),
+        error: selectError(state),
+        user: selectUser(state),
+    };
 };
 
 const mapDispatchToProps = { fetchExercise };

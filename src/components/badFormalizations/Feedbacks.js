@@ -1,6 +1,7 @@
 import React from 'react';
 import {Alert, ListGroup, Spinner} from 'react-bootstrap';
-import {useGetFeedbackQuery} from "../../redux/apiSlice";
+import {HandThumbsDownFill, HandThumbsUpFill} from "react-bootstrap-icons";
+import {useGetFeedbacksQuery} from "../../redux/feedbacksSlice";
 import {AddFeedback} from "./AddFeedback";
 import {Checkbox} from "./Checkbox";
 
@@ -11,7 +12,7 @@ export const Feedbacks = ({ i, bad_formalization_id }) => {
         isSuccess,
         isError,
         error
-    } = useGetFeedbackQuery(bad_formalization_id)
+    } = useGetFeedbacksQuery({bad_formalization_id}, {refetchOnMountOrArgChange: true })
 
     let content
 
@@ -27,7 +28,7 @@ export const Feedbacks = ({ i, bad_formalization_id }) => {
                         <Checkbox id={f.feedback_id} value={f.active}/>
                     </div>
                     <div>{f.feedback}</div>
-                    <div>shown... , rating...</div>
+                    <div>shown: {f.shown}, rating: <HandThumbsUpFill/>{f.likes}, <HandThumbsDownFill/>{f.dislikes}</div>
                 </ListGroup.Item>
             )
         });

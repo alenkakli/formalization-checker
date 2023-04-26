@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Form, Button} from 'react-bootstrap';
-import {useAddFeedbackMutation} from "../../redux/apiSlice";
+import {useAddFeedbackMutation} from "../../redux/feedbacksSlice";
 
 export const AddFeedback = ({ bad_formalization_id}) => {
     const [feedback, setFeedback] = useState('')

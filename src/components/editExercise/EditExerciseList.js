@@ -1,27 +1,26 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ListGroup, Spinner, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
-  fetchAllExercises,
-  selectExercises,
-  selectStatus,
-  selectError
-} from '../../redux/exercisesSlice';
-import {
   fetchSavedExercise
 } from '../../redux/addExerciseSlice';
+import {useGetExercisesQuery} from "../../redux/badFormalizationsSlice";
 
 
-function EditExerciseList({ exercises, status, error, fetchAllExercises, fetchSavedExercise }) {
-  useEffect(() => {
-      fetchAllExercises();
-  }, [fetchAllExercises]);
+function EditExerciseList({ fetchSavedExercise }) {
+  const {
+    data: exercises,
+    isLoading,
+    isSuccess,
+    isError,
+    error
+  } = useGetExercisesQuery(undefined, {refetchOnMountOrArgChange: true})
 
   let content = null;
-  if (status === 'loading') {
+  if (isLoading) {
     content = <Spinner animation="border" variant="primary" />;
-  } else if (status === 'succeeded') {
+  } else if (isSuccess) {
     let exercises_list = exercises.map((x) => (
       <ListGroup.Item
         as={Link} to={`/edit/${x.exercise_id}`} key={x.exercise_id}
@@ -32,7 +31,7 @@ function EditExerciseList({ exercises, status, error, fetchAllExercises, fetchSa
       </ListGroup.Item>
     ));
     content = <ListGroup>{ exercises_list }</ListGroup>;
-  } else if (status === 'failed') {
+  } else if (isError) {
     content = (
       <Alert variant="danger">
         { error }
@@ -48,14 +47,6 @@ function EditExerciseList({ exercises, status, error, fetchAllExercises, fetchSa
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    exercises: selectExercises(state),
-    status: selectStatus(state),
-    error: selectError(state),
-  };
-};
+const mapDispatchToProps = { fetchSavedExercise };
 
-const mapDispatchToProps = { fetchAllExercises, fetchSavedExercise };
-
-export default connect(mapStateToProps, mapDispatchToProps)(EditExerciseList);
+export default connect(null, mapDispatchToProps)(EditExerciseList);

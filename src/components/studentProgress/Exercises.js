@@ -1,7 +1,7 @@
 import React from 'react';
 import {Spinner, Alert, Table} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {useGetExercisesQuery} from "../../redux/apiSlice";
+import {useGetExercisesQuery} from "../../redux/badFormalizationsSlice";
 
 export const Exercises = () => {
     const {
@@ -10,7 +10,7 @@ export const Exercises = () => {
         isSuccess,
         isError,
         error
-    } = useGetExercisesQuery()
+    } = useGetExercisesQuery(undefined, {refetchOnMountOrArgChange: true})
 
     let content = null;
     if (isLoading) {
