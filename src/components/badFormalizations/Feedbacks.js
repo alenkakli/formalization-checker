@@ -1,9 +1,10 @@
 import React from 'react';
-import {Alert, ListGroup, Spinner} from 'react-bootstrap';
+import {ListGroup, Spinner} from 'react-bootstrap';
 import {HandThumbsDownFill, HandThumbsUpFill} from "react-bootstrap-icons";
 import {useGetFeedbacksQuery} from "../../redux/feedbacksSlice";
 import {AddFeedback} from "./AddFeedback";
 import {Checkbox} from "./Checkbox";
+import QueryError from '../common/QueryError';
 
 export const Feedbacks = ({ i, bad_formalization_id }) => {
     const {
@@ -35,9 +36,7 @@ export const Feedbacks = ({ i, bad_formalization_id }) => {
 
     } else if (isError) {
         content = (
-            <Alert variant="danger">
-                { error }
-            </Alert>
+            <QueryError as={ListGroup.Item} error={error} />
         );
     }
 

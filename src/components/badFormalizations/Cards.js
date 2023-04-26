@@ -1,7 +1,8 @@
 import React from 'react';
-import {Alert, Card, Spinner} from 'react-bootstrap';
+import {Card, Spinner} from 'react-bootstrap';
 import {Feedbacks} from "./Feedbacks";
 import {useGetBadFormalizationInfoQuery} from "../../redux/badFormalizationsSlice";
+import QueryError from '../common/QueryError';
 
 export const Cards = ({ i, bad_formalization_id, exercise_id, students }) => {
     const {
@@ -53,9 +54,7 @@ export const Cards = ({ i, bad_formalization_id, exercise_id, students }) => {
 
     } else if (isError) {
         content = (
-            <Alert variant="danger">
-                { error }
-            </Alert>
+            <QueryError error={error} />
         );
     }
 

@@ -1,9 +1,10 @@
 import React from 'react';
-import {Spinner, Alert} from 'react-bootstrap';
+import {Spinner} from 'react-bootstrap';
 import {
     useGetBadFormalizationsQuery
 } from "../../redux/badFormalizationsSlice";
 import {Cards} from "./Cards";
+import QueryError from '../common/QueryError';
 
 export const BadFormalizationsToProposition = ({ match }) => {
     const {exercise_id, proposition_id} = match.params
@@ -43,11 +44,7 @@ export const BadFormalizationsToProposition = ({ match }) => {
             )
         });
     } else if (isError) {
-        content = (
-            <Alert variant="danger">
-                { error }
-            </Alert>
-        );
+        content = <QueryError error={error} />;
     }
 
     return (

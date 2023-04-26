@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListGroup, Spinner, Alert } from 'react-bootstrap';
+import { ListGroup, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
@@ -7,6 +7,7 @@ import {
 } from '../../redux/solveExerciseSlice';
 import {selectUser} from "../../redux/userSlice";
 import {useGetExercisesQuery} from "../../redux/badFormalizationsSlice";
+import QueryError from '../common/QueryError';
 
 
 function ExerciseList({ fetchExercise, username, onSelect }) {
@@ -37,11 +38,7 @@ function ExerciseList({ fetchExercise, username, onSelect }) {
     ));
     content = <ListGroup>{ exercises_list }</ListGroup>;
   } else if (isError) {
-    content = (
-      <Alert variant="danger">
-        { error }
-      </Alert>
-    );
+    content = <QueryError error={error} />;
   }
 
   return (

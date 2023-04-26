@@ -1,7 +1,8 @@
 import React from 'react';
-import { Spinner, Alert, Table } from 'react-bootstrap';
+import { Spinner, Table } from 'react-bootstrap';
 import {Link} from "react-router-dom";
 import {useGetBadPropositionsQuery} from "../../redux/badFormalizationsSlice";
+import QueryError from '../common/QueryError';
 
 export const BadPropositionsToExercise = ({ match }) => {
     const {exercise_id} = match.params
@@ -49,11 +50,7 @@ export const BadPropositionsToExercise = ({ match }) => {
                 </tbody>
             </Table>;
     } else if (isError) {
-        content = (
-            <Alert variant="danger">
-                { error }
-            </Alert>
-        );
+        content = <QueryError error={error} />;
     }
 
     return (

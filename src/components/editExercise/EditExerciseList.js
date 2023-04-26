@@ -1,11 +1,12 @@
 import React from 'react';
-import { ListGroup, Spinner, Alert } from 'react-bootstrap';
+import { ListGroup, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   fetchSavedExercise
 } from '../../redux/addExerciseSlice';
 import {useGetExercisesQuery} from "../../redux/badFormalizationsSlice";
+import QueryError from '../common/QueryError';
 
 
 function EditExerciseList({ fetchSavedExercise }) {
@@ -32,11 +33,7 @@ function EditExerciseList({ fetchSavedExercise }) {
     ));
     content = <ListGroup>{ exercises_list }</ListGroup>;
   } else if (isError) {
-    content = (
-      <Alert variant="danger">
-        { error }
-      </Alert>
-    );
+    content = <QueryError error={error} />;
   }
 
   return (

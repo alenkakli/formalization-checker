@@ -1,7 +1,8 @@
 import React from 'react';
-import {Spinner, Alert, Table} from 'react-bootstrap';
+import {Spinner, Table} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
 import {useGetBadExercisesQuery} from "../../redux/badFormalizationsSlice";
+import QueryError from '../common/QueryError';
 
 export const BadExercises = () => {
     const {
@@ -43,11 +44,7 @@ export const BadExercises = () => {
                 </tbody>
             </Table>
     } else if (isError) {
-        content = (
-            <Alert variant="danger">
-                {error}
-            </Alert>
-        );
+        content = <QueryError error={error} />;
     }
 
     return (
