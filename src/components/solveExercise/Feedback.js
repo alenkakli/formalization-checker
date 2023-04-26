@@ -73,13 +73,13 @@ function Feedback({ feedback, updateRating }) {
                     {feedback.feedback}
                 </Alert>
             </Col>
-            <Col className="p-0" md="auto">{like}</Col>
-            <Col className="p-0" md="auto">{dislike}</Col>
+            <Col className="p-0" xs="auto">{like}</Col>
+            <Col className="p-0" xs="auto">{dislike}</Col>
         </Row>
     )
 
     return (
-        <Container>
+        <Container fluid>
             { content }
         </Container>
     );
