@@ -280,6 +280,8 @@ const viewFeedbacks = (proposition_id, evaluation, feedbacks, feedbackRating, in
     const hintButton = index < feedbacks.length-1 &&
         <Button
             className="mt-1 mr-1 mb-1"
+            variant="info"
+            size="sm"
             onClick={ () => {
                 setIndex(++index);
                 feedbackRating({

@@ -69,7 +69,7 @@ function Feedback({ feedback, updateRating }) {
     content = (
         <Row className="p-0 mb-1">
             <Col className="p-0">
-                <Alert variant="info" className="mb-0">
+                <Alert variant="info" className="mb-0 small p-2">
                     {feedback.feedback}
                 </Alert>
             </Col>

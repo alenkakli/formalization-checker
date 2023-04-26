@@ -43,7 +43,7 @@ export const Feedbacks = ({ i, bad_formalization_id }) => {
     return (
         <div className="clearfix">
             <h5 className="mt-2 px-4">Feedback</h5>
-            <ListGroup as="ol">
+            <ListGroup as="ol" className="list-group-flush border-top border-bottom">
                 { content }
             </ListGroup>
             <AddFeedback key={i} bad_formalization_id={bad_formalization_id} />
