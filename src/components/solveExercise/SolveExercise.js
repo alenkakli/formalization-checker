@@ -11,15 +11,12 @@ import {
 import { useParams } from 'react-router';
 import {selectUser} from "../../redux/userSlice";
 
-export const SolveExercise = ({ match, exercise, status, error, fetchExercise, user, onChange }) => {
-
-    let { id } = match.params;
-
+export const SolveExercise = ({ exerciseId, exercise, status, error, fetchExercise, user, onChange }) => {
     useEffect(() => {
         if (status === 'idle') {
-            fetchExercise({ exercise_id: id, username: user });
+            fetchExercise({ exercise_id: exerciseId, username: user });
         }
-    }, [status, id, exercise, fetchExercise, user]);
+    }, [status, exerciseId, exercise, fetchExercise, user]);
 
     let content = null;
     if (status === 'loading') {
@@ -28,7 +25,7 @@ export const SolveExercise = ({ match, exercise, status, error, fetchExercise, u
         const propositions_list = exercise.propositions.map((x) => (
             <Solution
               key={x.proposition_id}
-              exercise_id={id}
+              exercise_id={exerciseId}
               proposition_id={x.proposition_id}
               proposition={x.proposition}
               user={user}
@@ -60,7 +57,7 @@ export const SolveExercise = ({ match, exercise, status, error, fetchExercise, u
 }
 
 function SolveExercise1(props) {
-  let id = useParams()['id'];
+  const { id } = useParams();
   return <SolveExercise exerciseId={id} {...props} />
 }
 
