@@ -23,7 +23,7 @@ export const Feedbacks = ({ i, bad_formalization_id }) => {
 
         content = feedback.map((f) => {
             return (
-                <ListGroup.Item as="li">
+                <ListGroup.Item as="li" id={f.feedback_id}>
                     <div className="d-flex justify-content-between">
                         {f.author}
                         <Checkbox id={f.feedback_id} value={f.active}/>

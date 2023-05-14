@@ -35,11 +35,13 @@ function UsersSolutionList({ solutions, status, error, title, match: { params: {
                     <p className='d-inline'>, <FeedbacksList
                             exercise_id={solution.exercise_id}
                             proposition_id={solution.proposition_id}
+                            solution_id={solution.solution_id}
                             feedback_id={f.feedback_id}
                             feedback={f.feedback}/></p> :
                     <FeedbacksList
                         exercise_id={solution.exercise_id}
                         proposition_id={solution.proposition_id}
+                        solution_id={solution.solution_id}
                         feedback_id={f.feedback_id}
                         feedback={f.feedback}/>
             })
@@ -68,7 +70,7 @@ function UsersSolutionList({ solutions, status, error, title, match: { params: {
             }
             if(solution.is_correct){
                 table.push(
-                    <tr key={solution.solution_id}>
+                    <tr key={solution.solution_id} id={solution.solution_id}>
                         <td>{date}</td>
                         <td>{solution.solution}</td>
                         <td>  &#x2713;</td>
@@ -77,7 +79,7 @@ function UsersSolutionList({ solutions, status, error, title, match: { params: {
             }
             else{
                 table.push(
-                    <tr key={solution.solution_id}>
+                    <tr key={solution.solution_id} id={solution.solution_id}>
                         <td>{date}</td>
                         <td>{solution.solution}</td>
                         <td>  &#x2715;</td>
