@@ -9,7 +9,7 @@ import {
     selectUserName,
     selectUsersSolution
 } from "../../redux/progressPropositionsSlice";
-import {FeedbacksList} from "./FeedbacksList";
+import FeedbacksList from "./FeedbacksList";
 
 
 function UsersSolutionList({ solutions, status, error, title, match: { params: { exercise_id, user_name } }, fetchUsersSolutions })  {
@@ -132,7 +132,7 @@ const mapStateToProps = (state) => {
         status: selectStatus(state),
         error: selectError(state),
         name: selectUserName(state),
-        title: selectExerciseTitle(state),
+        title: selectExerciseTitle(state)
     };
 };
 

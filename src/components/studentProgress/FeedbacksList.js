@@ -1,10 +1,28 @@
 import React from 'react';
 import { HashLink as Link } from 'react-router-hash-link';
+import {connect} from "react-redux";
+import {selectIsAdmin} from "../../redux/userSlice";
 
-export const FeedbacksList = ({ exercise_id, proposition_id, solution_id, feedback_id, feedback }) => {
+function FeedbacksList({ isAdmin, exercise_id, proposition_id, solution_id, feedback_id, feedback }) {
+    if (isAdmin) {
+        return (
+            <Link to={`/bad_formalizations/${exercise_id}/${proposition_id}#${feedback_id}`} key={solution_id}>
+                {feedback.slice(0, 25)}
+            </Link>
+        )
+    }
     return (
-        <Link to={`/bad_formalizations/${exercise_id}/${proposition_id}#${feedback_id}`} key={solution_id}>
+        <span>
             {feedback.slice(0, 25)}
-        </Link>
+        </span>
     )
 }
+
+const mapStateToProps = (state) => {
+    return {
+        isAdmin: selectIsAdmin(state),
+    };
+};
+
+
+export default connect(mapStateToProps, null)(FeedbacksList);
