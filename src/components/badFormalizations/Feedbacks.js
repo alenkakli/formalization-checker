@@ -13,7 +13,7 @@ export const Feedbacks = ({ i, bad_formalization_id }) => {
         isSuccess,
         isError,
         error
-    } = useGetFeedbacksQuery({bad_formalization_id}, {refetchOnMountOrArgChange: true })
+    } = useGetFeedbacksQuery(bad_formalization_id)
 
     let content
 
@@ -26,7 +26,7 @@ export const Feedbacks = ({ i, bad_formalization_id }) => {
                 <ListGroup.Item as="li">
                     <div className="d-flex justify-content-between">
                         {f.author}
-                        <Checkbox id={f.feedback_id} value={f.active}/>
+                        <Checkbox id={f.feedback_id} value={f.active} bad_formalization_id={bad_formalization_id}/>
                     </div>
                     <div>{f.feedback}</div>
                     <div>shown: {f.shown}, rating: <HandThumbsUpFill/>{f.likes}, <HandThumbsDownFill/>{f.dislikes}</div>
