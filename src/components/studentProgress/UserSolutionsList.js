@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import {Alert, Spinner, Table} from 'react-bootstrap';
+import {Check, X} from "react-bootstrap-icons";
 import {connect} from 'react-redux';
 import {
     fetchUsersSolutions,
@@ -68,24 +69,15 @@ function UsersSolutionList({ solutions, status, error, title, match: { params: {
                 table = [];
                 proposition = solution.proposition;
             }
-            if(solution.is_correct){
-                table.push(
-                    <tr key={solution.solution_id} id={solution.solution_id}>
-                        <td>{date}</td>
-                        <td>{solution.solution}</td>
-                        <td>  &#x2713;</td>
-                        <td></td>
-                    </tr>)
-            }
-            else{
-                table.push(
-                    <tr key={solution.solution_id} id={solution.solution_id}>
-                        <td>{date}</td>
-                        <td>{solution.solution}</td>
-                        <td>  &#x2715;</td>
-                        <td>{feedback_list}</td>
-                    </tr>)
-            }
+            table.push(
+                <tr key={solution.solution_id} id={solution.solution_id}>
+                    <td>{date}</td>
+                    <td>{solution.solution}</td>
+                    <td>
+                        {(solution.is_correct) ? <Check size={25} color="green"/> : <X size={25} color="red"/>}
+                    </td>
+                    <td>{feedback_list}</td>
+                </tr>)
         }
 
         //last element of array

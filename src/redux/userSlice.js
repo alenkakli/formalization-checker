@@ -153,6 +153,9 @@ export const userSlice = createSlice({
 export const selectUser = (state) => {
   return state.user.user?.username;
 }
+export const selectIsAdmin = (state) => {
+  return state.user.isAdmin;
+}
 
 export const {
   updateUsername,
