@@ -20,7 +20,7 @@ export const AddFeedback = ({ bad_formalization_id}) => {
                     type="text"
                     as="textarea"
                     rows={2}
-                    placeholder="Enter exercise title"
+                    placeholder="Enter feedback"
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
                 />
