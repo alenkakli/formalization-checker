@@ -17,12 +17,12 @@ export const feedbacksSlice = createApi({
     tagTypes: ['Feedbacks'],
     endpoints: builder => ({
         getFeedbacks: builder.query({
-            query: (bad_formalization_id) => ({
-                url: `all/bad_formalization/${bad_formalization_id.bad_formalization_id}`,
+            query: bad_formalization_id => ({
+                url: `all/bad_formalization/${bad_formalization_id}`,
                 method: 'GET'
             }),
-            skipCache: true,
-            providesTags: ['Feedbacks'],
+            providesTags: (result, error, id) => [{ type: 'Feedbacks', id }]
+
         }),
         getRating: builder.query({
             query: ({solution_id, feedback_id}) => ({
@@ -31,20 +31,20 @@ export const feedbacksSlice = createApi({
             }),
         }),
         addFeedback: builder.mutation({
-            query: initialPost => ({
+            query: feedback => ({
                 url: '/',
                 method: 'POST',
-                body: initialPost
+                body: feedback
             }),
-            invalidatesTags: ['Feedbacks'],
+            invalidatesTags: (result, error, feedback) => [{ type: 'Feedbacks', id: feedback.bad_formalization_id }],
         }),
         updateFeedback: builder.mutation({
-            query: post => ({
-                url: `/${post.id}`,
+            query: feedback => ({
+                url: `/${feedback.id}`,
                 method: 'PATCH',
-                body: post
+                body: feedback
             }),
-            invalidatesTags: ['Feedbacks'],
+            invalidatesTags: (result, error, id) => [{ type: 'Feedbacks', id: id.bad_formalization_id }]
         })
 
     }),
