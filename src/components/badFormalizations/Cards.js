@@ -3,6 +3,8 @@ import {Card, Spinner} from 'react-bootstrap';
 import {Feedbacks} from "./Feedbacks";
 import {useGetBadFormalizationInfoQuery} from "../../redux/badFormalizationsSlice";
 import QueryError from '../common/QueryError';
+import { HashLink as Link } from 'react-router-hash-link';
+
 
 export const Cards = ({ i, bad_formalization_id, exercise_id, students }) => {
     const {
@@ -20,7 +22,10 @@ export const Cards = ({ i, bad_formalization_id, exercise_id, students }) => {
     } else if (isSuccess) {
         let formalizations;
         let students_list = students.map((s) => (
-            <a className="my-0 pl-4 text-muted d-block" href={`/progress/${exercise_id}/${s.user_name}`}>{s.user_name}</a>
+            <Link to={`/progress/${exercise_id}/${s.user_name}#${s.solution_id}`} key={s.user_name}
+                  className="my-0 pl-4 text-muted d-block">
+                {s.user_name}
+            </Link>
             )
         );
         if (bad_formalization.bad_solutions !== null) {

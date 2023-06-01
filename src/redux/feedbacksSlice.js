@@ -24,6 +24,12 @@ export const feedbacksSlice = createApi({
             skipCache: true,
             providesTags: ['Feedbacks'],
         }),
+        getRating: builder.query({
+            query: ({solution_id, feedback_id}) => ({
+                url: `/rating/${solution_id}/${feedback_id}`,
+                method: 'GET'
+            }),
+        }),
         addFeedback: builder.mutation({
             query: initialPost => ({
                 url: '/',
@@ -46,6 +52,7 @@ export const feedbacksSlice = createApi({
 
 export const {
     useGetFeedbacksQuery,
+    useGetRatingQuery,
     useAddFeedbackMutation,
     useUpdateFeedbackMutation
 } = feedbacksSlice

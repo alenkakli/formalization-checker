@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import {Alert, Spinner, Table} from 'react-bootstrap';
+import {Check, X} from "react-bootstrap-icons";
 import {connect} from 'react-redux';
 import {
     fetchUsersSolutions,
@@ -9,7 +10,7 @@ import {
     selectUserName,
     selectUsersSolution
 } from "../../redux/progressPropositionsSlice";
-import {FeedbacksList} from "./FeedbacksList";
+import FeedbacksList from "./FeedbacksList";
 
 
 function UsersSolutionList({ solutions, status, error, title, match: { params: { exercise_id, user_name } }, fetchUsersSolutions })  {
@@ -35,11 +36,13 @@ function UsersSolutionList({ solutions, status, error, title, match: { params: {
                     <p className='d-inline'>, <FeedbacksList
                             exercise_id={solution.exercise_id}
                             proposition_id={solution.proposition_id}
+                            solution_id={solution.solution_id}
                             feedback_id={f.feedback_id}
                             feedback={f.feedback}/></p> :
                     <FeedbacksList
                         exercise_id={solution.exercise_id}
                         proposition_id={solution.proposition_id}
+                        solution_id={solution.solution_id}
                         feedback_id={f.feedback_id}
                         feedback={f.feedback}/>
             })
@@ -66,24 +69,15 @@ function UsersSolutionList({ solutions, status, error, title, match: { params: {
                 table = [];
                 proposition = solution.proposition;
             }
-            if(solution.is_correct){
-                table.push(
-                    <tr key={solution.solution_id}>
-                        <td>{date}</td>
-                        <td>{solution.solution}</td>
-                        <td>  &#x2713;</td>
-                        <td></td>
-                    </tr>)
-            }
-            else{
-                table.push(
-                    <tr key={solution.solution_id}>
-                        <td>{date}</td>
-                        <td>{solution.solution}</td>
-                        <td>  &#x2715;</td>
-                        <td>{feedback_list}</td>
-                    </tr>)
-            }
+            table.push(
+                <tr key={solution.solution_id} id={solution.solution_id}>
+                    <td>{date}</td>
+                    <td>{solution.solution}</td>
+                    <td>
+                        {(solution.is_correct) ? <Check size={25} color="green"/> : <X size={25} color="red"/>}
+                    </td>
+                    <td>{feedback_list}</td>
+                </tr>)
         }
 
         //last element of array
@@ -130,7 +124,7 @@ const mapStateToProps = (state) => {
         status: selectStatus(state),
         error: selectError(state),
         name: selectUserName(state),
-        title: selectExerciseTitle(state),
+        title: selectExerciseTitle(state)
     };
 };
 
