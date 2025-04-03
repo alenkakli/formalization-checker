@@ -7,7 +7,6 @@ import {
   parseConstants,
   parsePredicates,
   parseFunctions,
-  parseFormulaWithPrecedence
 } from '@fmfi-uk-1-ain-412/js-fol-parser';
 import { fetchData } from './fetchData';
 import {
@@ -112,6 +111,7 @@ export const addExerciseSlice = createSlice({
     functions: '',
     constraint: '',
     id: '',
+    parserType: '',
     propositions: [{
       proposition: '',
       proposition_id: '',
@@ -141,6 +141,9 @@ export const addExerciseSlice = createSlice({
     },
     updateConstraint: (state, action) => {
       state.constraint = action.payload;
+    },
+    updateParser: (state, action) => {
+      state.parserType = action.payload;
     },
     updateInformalValue: {
       reducer: (state, action) => {
@@ -206,6 +209,7 @@ export const addExerciseSlice = createSlice({
         state.functions = '';
         state.constraint = '';
         state.id = '';
+        state.parserType = '';
         state.propositions = [{
           proposition: '',
           proposition_id: '',
@@ -228,6 +232,7 @@ export const addExerciseSlice = createSlice({
       state.predicates = ''
       state.functions =  ''
       state.constraint = ''
+      state.parserType = ''
       state.propositions= [{
         "proposition": '',
         "formalizations": [''],
@@ -252,6 +257,7 @@ export const addExerciseSlice = createSlice({
       state.functions = '';
       state.constraint = '';
       state.id = '';
+      state.parserType = '';
       state.propositions = [{
         proposition: '',
         proposition_id: '',
@@ -275,6 +281,7 @@ export const addExerciseSlice = createSlice({
       state.functions = '';
       state.constraint = '';
       state.id = '';
+      state.parserType = '';
       state.propositions = [{
         proposition: '',
         proposition_id: '',
@@ -309,6 +316,7 @@ export const addExerciseSlice = createSlice({
       state.functions = exercise.functions;
       state.constraint = exercise.constraints === undefined? "": exercise.constraints;
       state.id = exercise.exercise_id;
+      state.parserType = exercise.parserType;
       state.propositions = [];
       for (let i = 0; i < exercise.propositions.length; i++) {
         let formalization = [];
@@ -349,6 +357,7 @@ export const {
   removeFormalization,
   updateConstraints,
   updateConstraint,
+  updateParser,
   changeStatus
 } = addExerciseSlice.actions;
 
@@ -399,6 +408,12 @@ export const selectExerciseTitle = (state) => {
 export const selectDescription = (state) => {
   return {
     value: state.addExercise.description
+  };
+};
+
+export const selectParser = (state) => {
+  return {
+    value: state.addExercise.parserType
   };
 };
 
@@ -484,12 +499,13 @@ export const selectInformalValue = (state, i) => {
 export const selectFormalization = createSelector(
   [
     (state, i, j) => state.addExercise.propositions[i].formalizations[j],
-    (state, i, j) => selectLanguage(state)
+    (state, i, j) => selectLanguage(state),
+    (state) => selectParser(state).value
   ],
-  (value, language) => {
+  (value, language, parserType) => {
     let error = parseFormalization(
       value, language.constants, language.predicates,
-      language.functions, parseFormulaWithPrecedence
+      language.functions, parserType
     );
     return { value, error };
   }
@@ -498,15 +514,16 @@ export const selectFormalization = createSelector(
 export const selectConstraints = createSelector(
   [
     (state, i, j) => state.addExercise.propositions[i].constraints[j],
-    (state, i, j) => selectLanguage(state)
+    (state, i, j) => selectLanguage(state),
+    (state) => selectParser(state).value
   ],
-  (value, language) => {
+  (value, language, parserType) => {
     if(value === ''){
       return { value, error: ""};
     }
     let error = parseFormalization(
       value, language.constants, language.predicates,
-      language.functions, parseFormulaWithPrecedence
+      language.functions, parserType
     );
     return { value, error };
   }
@@ -515,15 +532,16 @@ export const selectConstraints = createSelector(
 export const selectConstraint = createSelector(
   [
     (state) => state.addExercise.constraint,
-    (state) => selectLanguage(state)
+    (state) => selectLanguage(state),
+    (state) => selectParser(state).value
   ],
-  (value, language) => {
+  (value, language, parserType) => {
     if(value === ''){
       return { value, error: ""};
     }
     let error = parseFormalization(
       value, language.constants, language.predicates,
-      language.functions, parseFormulaWithPrecedence
+      language.functions, parserType
     );
     return { value, error };
   }
@@ -562,6 +580,7 @@ const selectExercise = (state) => {
     constraint: state.addExercise.constraint,
     id: state.addExercise.id,
     propositions: state.addExercise.propositions,
+    parserType: state.addExercise.parserType,
   };
 };
 

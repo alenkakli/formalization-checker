@@ -4,13 +4,15 @@ import { connect } from 'react-redux';
 import {
   addNewExercise,
   checkExercise,
-  selectExerciseTitle
+  selectExerciseTitle,
+  selectParser
 } from '../../redux/addExerciseSlice';
 import LanguageSection from './LanguageSection';
 import PropositionsSection from './PropositionsSection';
 import ExerciseTitle from './ExerciseTitle';
 import Description from './Description';
 import SaveButtonGroup from './SaveButtonGroup';
+import ParserSelection from './ParserSelection';
 
 function AddExercise({ status, error, containsErrors, title, addExercise, added}) {
   let content = null;
@@ -28,6 +30,7 @@ function AddExercise({ status, error, containsErrors, title, addExercise, added}
                   <ExerciseTitle />
                   <Description />
                   <LanguageSection />
+                  <ParserSelection />
                   <PropositionsSection />
                   <SaveButtonGroup
                     containsErrors={containsErrors}
@@ -55,7 +58,8 @@ const mapStateToProps = (state) => {
     added: state.addExercise.added,
     error: state.addExercise.error,
     containsErrors: checkExercise(state),
-    title: selectExerciseTitle(state).value
+    title: selectExerciseTitle(state).value,
+    selectedParser: selectParser(state).value
   };
 };
 

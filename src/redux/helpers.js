@@ -1,3 +1,4 @@
+import { parseFormulaStrict, parseFormulaWithPrecedence } from "@fmfi-uk-1-ain-412/js-fol-parser";
 import {
   Conjunction, Constant,
   Disjunction, EqualityAtom,
@@ -31,7 +32,7 @@ export const parseLanguageSubset = (input, parser) => {
       error: error
     };
   }
-}
+};
 
 const checkArity = (symbol, args, arityMap, {expected}) => {
   const a = arityMap.get(symbol);
@@ -40,7 +41,7 @@ const checkArity = (symbol, args, arityMap, {expected}) => {
   }
 }
 
-export const parseFormalization = (input, constants, predicates, functions, parser) => {
+export const parseFormalization = (input, constants, predicates, functions, parserType) => {
   const nonLogicalSymbols = new Set([
     ...constants,
     ...predicates.keys(),
@@ -76,6 +77,7 @@ export const parseFormalization = (input, constants, predicates, functions, pars
   };
 
   try {
+    const parser = parserType === 'withPrecedence' ? parseFormulaWithPrecedence : parseFormulaStrict;
     const fvars = parser(input, language, factories).getFreeVariables();
     if (fvars.size > 0) {
       throw ({
@@ -106,8 +108,8 @@ export const makeStructure = (iCWithUnnamed, iPF, C_L) => (
     iC: Object.fromEntries(
       Object.entries(iCWithUnnamed).filter(([name, _]) => C_L.has(name))
     ),
-    iP: iPF,
-    iF: null,
+    iP: iPF.predicates,
+    iF: iPF.functions,
   }
   : undefined
 );

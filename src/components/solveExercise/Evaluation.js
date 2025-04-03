@@ -11,6 +11,7 @@ import {
     makeStructure
 } from '../../redux/helpers';
 import Feedback from "./Feedback";
+import { EqualityAtom } from '../../redux/formula_classes';
 
 function Evaluation({ proposition_id, evaluation, feedbacks, fetchFeedbacks, feedbackRating, status, error }) {
     const [index, setIndex] = useState(-1);
@@ -144,36 +145,230 @@ const Structure = ({ subscript, D, iC, iP, iF }) => (<>
     />
 </>)
 
-const Counterexample = ({structure, description, index, msgNotFound}) => {
-    const subscript = index ? <sub>{index}</sub> : null;
+const CollapsibleStructure = ({ subscript, structure }) => (
+    <details className="mt-2">
+        <summary className="mb-2">Structure</summary>
+        <Structure subscript={subscript} {...structure} />
+    </details>
+);
+
+const Traces = ({ traces }) => {
+    if (!traces) return null;
     return (
-        structure
-        ? <div className="mb-2">
+        <div>
+            {traces}
+        </div>
+    );
+};
+
+
+const Counterexample = ({ structure, description, index, msgNotFound, traces }) => {
+    const subscript = index ? <sub>{index}</sub> : null;
+
+    return structure ? (
+        <div className="mb-2">
             <p className="mb-1">
                 {description}{" "}
                 ℳ{subscript} = (𝐷{subscript}, 𝑖{subscript}) where:
             </p>
-            <Structure subscript={subscript} {...structure}/>
+            <Traces 
+                traces={traces} 
+                />
+            <CollapsibleStructure
+                subscript={subscript}
+                structure={structure}
+            />
         </div>
-        : <p className="mb-2">
-            { msgNotFound ??
-                'We could not find a counterexample automatically.'
-            }
+    ) : (
+        <p className="mb-2">
+            {msgNotFound ?? "We could not find a counterexample automatically."}
             {msgDiscuss}
         </p>
     );
-}
+};
+
+const getLanguageDifferences = (languageDifferences) => {
+    const nonEmptyDifferences = Object.entries(languageDifferences)
+        .map(([key, { missing, extra }]) => {
+            const differenceParts = [];
+
+            if (missing.length > 0) {
+                differenceParts.push(
+                    <li key={`${key}-missing`}>
+                        <strong>{key.charAt(0).toUpperCase() + key.slice(1)} missing:</strong> {missing.join(", ")}
+                    </li>
+                );
+            }
+
+            if (extra.length > 0) {
+                differenceParts.push(
+                    <li key={`${key}-extra`}>
+                        <strong>Extra {key.slice(0)}:</strong> {extra.join(", ")}
+                    </li>
+                );
+            }
+
+            return differenceParts.length > 0 ? differenceParts : null;
+        })
+        .flat();
+
+    return nonEmptyDifferences.length > 0 ? <ul>{nonEmptyDifferences}</ul> : <p>No missing or extra symbols found.</p>;
+};
+
+const makeTraces = (traces, domain) => {
+    domain = domain.map(item => 
+        item.includes("fmb") ? item.replace(/^fmb_\$i_/, "$") : item
+    );
+
+    const renderEvaluation = (evalObj, seenEvaluations = new Set()) => {
+        const evaluationString = JSON.stringify(evalObj);
+
+        if (seenEvaluations.has(evaluationString)) {
+            return;
+        }
+        seenEvaluations.add(evaluationString);
+
+        switch (evalObj.kind) {
+            case "universalQuant":
+            case "existentialQuant":
+                return (
+                    <div className="quant-block">
+                        {evalObj.args.map((arg, index) => (
+                            <div key={index} className="connective-block">
+                                {renderEvaluation(arg, seenEvaluations)}
+                            </div>
+                        ))}
+                    </div>
+                );
+            
+            case "conjunction":
+            case "disjunction":
+            case "implication":
+            case "equivalence":
+            case "negation":
+                return (
+                    <span className="connective-inline">
+                        {evalObj.args.map((arg, index) => (
+                            <React.Fragment key={index}>
+                                {index > 0 && " ∧ "}
+                                {renderEvaluation(arg)}
+                            </React.Fragment>
+                        ))}
+                    </span>
+                );
+                
+            case "equality":
+                const left = renderEvaluation(evalObj.args[0], seenEvaluations);
+                const right = renderEvaluation(evalObj.args[1], seenEvaluations);
+
+                let equalityString = `${evalObj.args[0].symbol}`;
+                if (evalObj.args[0].kind !== "constant") {
+                    equalityString += `(${domain[evalObj.args[0].result-1]})`
+                }
+                equalityString += `${evalObj.result ? "=" : "!="} ${evalObj.args[1].symbol}`
+                if (evalObj.args[1].kind !== "constant") {
+                    equalityString += `(${domain[evalObj.args[1].result-1]})`
+                }
+
+                return  <span>
+                            {left}{left && " ∧ "}{right}{right && " ∧ "}{equalityString}
+                        </span>;
+
+            case "predicate":
+                let predicateFunc;
+                const predicateString = `${evalObj.symbol}(${evalObj.args.map(arg => {
+                        if (arg.kind === "functionApplication") {
+                            predicateFunc = <span>{predicateFunc} {renderEvaluation(arg, seenEvaluations)} ∧ </span>;
+                        }
+                        return (arg.kind === "variable" || arg.kind === "functionApplication")
+                            ? domain[arg.result - 1] 
+                            : arg.symbol;
+                    }).join(", ")})`;
+                
+                return  <span>
+                            {predicateFunc} {evalObj.result ? predicateString : `¬${predicateString}`}
+                        </span>;
+            
+            case "functionApplication":
+                let functionFunc;
+                const functionString = `${evalObj.symbol}(${evalObj.args.map(arg => {
+                    if (arg.kind === "functionApplication") {
+                        functionFunc = <span>{functionFunc} {renderEvaluation(arg, seenEvaluations)} ∧ </span>;
+                    }
+                    return (arg.kind === "variable" || arg.kind === "functionApplication")
+                        ? domain[arg.result - 1] 
+                        : arg.symbol;
+                }).join(", ")}) = ${domain[evalObj.result - 1]}`;
+                
+                return  <span>
+                            {functionFunc} {functionString}
+                        </span>;
+
+            case "variable":
+            case "constant":
+                return  null;
+
+            default:
+                return null;
+        }
+    };
+
+    const fmbValues = domain.filter(item => item.startsWith("$"));
+
+    let tracePrologue = `∀x ( ${domain.map(value => `x = ${value} `).join(" ∨ ")} )`;
+    if (fmbValues.length > 0) {
+        tracePrologue = `${fmbValues.map(fmb => `∃ ${fmb}`).join(" ")} ( ${tracePrologue} )`;
+    }
+
+    const inequalities = [];
+    const minInequalities = Math.min(domain.length, 3);
+    for (let i = 0; i < minInequalities; i++) {
+        for (let j = i + 1; j < minInequalities; j++) {
+            inequalities.push(`${domain[i]} ≠ ${domain[j]}`);
+        }
+    }
+    if (inequalities.length > 0) {
+        tracePrologue += ` ∧ ( ${inequalities.join(" ∧ ")} ${domain.length > 3 ? "∧ ..." : ""} )`;
+    }
+
+    return (
+        <div className="container mt-3">
+            <p className="mb-0"><b>Your</b> formalization is <b>{traces[0].result.toString()}</b> because</p>
+            <p className="mb-0">{tracePrologue}</p><br /> 
+            <div className="student-trace">
+                {renderEvaluation(traces[0])}
+            </div>
+            <br /> 
+            <p className="mb-0">The <b>correct</b> formalization is <b>{traces[1].result.toString()}</b> because</p>
+            <p className="mb-0">{tracePrologue}</p><br /> 
+            <div className="solution-trace">
+                {renderEvaluation(traces[1])}
+            </div>
+            <br />
+        </div>
+    );
+};
+
 
 const viewEvalResult = (evaluation) => {
-    if (evaluation.solutionToFormalization === 'OK'
-        && evaluation.formalizationToSolution === 'OK') {
+    if (evaluation.solutionToFormalization.result === "missingOrExtraSymbols" &&
+        evaluation.formalizationToSolution.result === "missingOrExtraSymbols") {
+        return (
+            <IncorrectEvalResult summary="Your formalization is incorrect due to missing or extra symbols.">
+                {getLanguageDifferences(evaluation.languageDifferences)}
+            </IncorrectEvalResult>
+        );
+      }
+
+    if (evaluation.solutionToFormalization.result === 'OK'
+        && evaluation.formalizationToSolution.result === 'OK') {
         return <CorrectEvalResult />;
     }
 
-    if (evaluation.solutionToFormalization === 'TE'
-        || evaluation.formalizationToSolution === 'TE'
-        || evaluation.solutionToFormalization === 'ME'
-        || evaluation.formalizationToSolution === 'ME') {
+    if (evaluation.solutionToFormalization.result === 'TE'
+        || evaluation.formalizationToSolution.result === 'TE'
+        || evaluation.solutionToFormalization.result === 'ME'
+        || evaluation.formalizationToSolution.result === 'ME') {
         return <FailedEvalResult />;
     }
 
@@ -183,25 +378,37 @@ const viewEvalResult = (evaluation) => {
     // FIXME: 1.5.1. Peter je muž. A = E.
     // No counterexample in one direction, in the other direction:
     // got i(muz) = {}; should get: i(muz) = {i(Peter)}
-    const C_L = new Set(evaluation.languageContants);
+    // const C_L = new Set(evaluation.languageContants);
     // TODO: Fix backend to return a pair of objects similar to these
     const correctImpliesInput = {
-        result: evaluation.formalizationToSolution,
-        description: evaluation.m1,
-        counterexample: makeStructure(
-            evaluation.domainFormalizationToSolution,
-            evaluation.symbolsFormalizationToSolution,
-            C_L
-        )
+        result: evaluation.formalizationToSolution.result,
+        // description: evaluation.m1,
+        traces: evaluation.formalizationToSolution.result !== "OK" ?
+            makeTraces([ evaluation.formalizationToSolution.trace.true, evaluation.formalizationToSolution.trace.false ],
+                 Object.keys(evaluation.formalizationToSolution.structure.domain)) : null,
+        counterexample: evaluation.formalizationToSolution.result !== "OK" ?
+            makeStructure(
+                evaluation.formalizationToSolution.structure.domain,
+                evaluation.formalizationToSolution.structure.symbols,
+                new Set(evaluation.formalizationToSolution.structure.languageConstants)
+            )
+            : null
     }
     const inputImpliesCorrect = {
-        result: evaluation.solutionToFormalization,
-        description: evaluation.m2,
-        counterexample: makeStructure(
-            evaluation.domainSolutionToFormalization,
-            evaluation.symbolsSolutionToFormalization,
-            C_L
-        )
+        result: evaluation.solutionToFormalization.result,
+        // description: evaluation.m2,
+        traces: evaluation.solutionToFormalization.result !== "OK" ?
+            makeTraces([ evaluation.solutionToFormalization.trace.false, evaluation.solutionToFormalization.trace.true ],
+                 Object.keys(evaluation.solutionToFormalization.structure.domain)
+                ) 
+                : null,
+        counterexample: evaluation.solutionToFormalization.result !== "OK" ?
+            makeStructure(
+                evaluation.solutionToFormalization.structure.domain,
+                evaluation.solutionToFormalization.structure.symbols,
+                new Set(evaluation.solutionToFormalization.structure.languageConstants)
+            )
+            : null
     }
 
     if (inputImpliesCorrect.result === 'OK'
@@ -215,6 +422,7 @@ const viewEvalResult = (evaluation) => {
                 <Counterexample
                     description="One such structure is"
                     structure={correctImpliesInput.counterexample}
+                    traces={correctImpliesInput.traces}
                 />
             </IncorrectEvalResult>
         );
@@ -231,6 +439,7 @@ const viewEvalResult = (evaluation) => {
                 <Counterexample
                     description="One such structure is"
                     structure={inputImpliesCorrect.counterexample}
+                    traces={inputImpliesCorrect.traces}
                 />
             </IncorrectEvalResult>
         );
@@ -248,6 +457,7 @@ const viewEvalResult = (evaluation) => {
                     and the correct formalization is false,
                     e.g., in structure"
                 structure={inputImpliesCorrect.counterexample}
+                traces={inputImpliesCorrect.traces}
                 index={1}
                 msgNotFound={`We could not automatically find a structure
                     in which your formalization is true
@@ -258,6 +468,7 @@ const viewEvalResult = (evaluation) => {
                     and the correct formalization is true,
                     e.g., in structure"
                 structure={correctImpliesInput.counterexample}
+                traces={correctImpliesInput.traces}
                 index={2}
                 msgNotFound={`We could not automatically find a structure
                     in which your formalization is false

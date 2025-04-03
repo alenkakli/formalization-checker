@@ -5,13 +5,15 @@ import {
     saveExercise,
     removeExercise,
   checkExercise,
-  selectExerciseTitle
+  selectExerciseTitle,
+  selectParser
 } from '../../redux/addExerciseSlice';
 import LanguageSection from '../addExercise/LanguageSection';
 import PropositionsSection from '../addExercise/PropositionsSection';
 import ExerciseTitle from '../addExercise/ExerciseTitle';
 import Description from '../addExercise/Description';
 import SaveButtonGroup from '../addExercise/SaveButtonGroup';
+import ParserSelection from '../addExercise/ParserSelection';
 
 function EditExercise({ status, error, title, containsErrors, removeExercise, saveExercise }) {
   let content = null;
@@ -22,6 +24,7 @@ function EditExercise({ status, error, title, containsErrors, removeExercise, sa
         <ExerciseTitle />
         <Description />
         <LanguageSection />
+        <ParserSelection />
         <PropositionsSection />
         <Row className="justify-content-end">
           <Col xs={12} md={{order: 2, span: 4}}>
@@ -72,7 +75,8 @@ const mapStateToProps = (state) => {
     status: state.addExercise.status,
     error: state.addExercise.error,
     containsErrors: checkExercise(state),
-    title: selectExerciseTitle(state).value
+    title: selectExerciseTitle(state).value,
+    selectedParser: selectParser(state).value
   };
 };
 

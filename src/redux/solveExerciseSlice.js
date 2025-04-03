@@ -6,7 +6,6 @@ import {
   parseConstants,
   parsePredicates,
   parseFunctions,
-  parseFormulaWithPrecedence
 } from '@fmfi-uk-1-ain-412/js-fol-parser';
 import { fetchData } from './fetchData';
 import {
@@ -97,6 +96,7 @@ export const solveExerciseSlice = createSlice({
     constants: [],
     predicates: [],
     functions: [],
+    parserType: '',
 
     solutions: {},
     solution: null
@@ -110,6 +110,9 @@ export const solveExerciseSlice = createSlice({
       prepare: (value, id) => {
         return { payload: { value, id } };
       }
+    },
+    updateParser: (state, action) => {
+      state.parserType = action.payload;
     }
   },
   extraReducers: {
@@ -122,6 +125,7 @@ export const solveExerciseSlice = createSlice({
       state.constants = parseConstants(state.exercise.constants);
       state.predicates = parsePredicates(state.exercise.predicates);
       state.functions = parseFunctions(state.exercise.functions);
+      state.parserType = action.payload.parserType;
       for (let p of state.exercise.propositions) {
         state.solutions[p.proposition_id] = {
           evaluation: null,
@@ -187,7 +191,8 @@ export const solveExerciseSlice = createSlice({
 
 /* export actions */
 export const {
-  update
+  update,
+  updateParser
 } = solveExerciseSlice.actions;
 
 
@@ -199,11 +204,12 @@ export const selectExercise = (state) => {
 
 export const selectSolution = (state, id) => {
   const value = state.solveExercise.solutions[id].solution;
+  const parserType = state.solveExercise.parserType;
   let error = parseFormalization(
     value, new Set(state.solveExercise.constants),
     arrayToArityMap(state.solveExercise.predicates),
     arrayToArityMap(state.solveExercise.functions),
-    parseFormulaWithPrecedence
+    parserType
   );
   return { value, error };
 };
