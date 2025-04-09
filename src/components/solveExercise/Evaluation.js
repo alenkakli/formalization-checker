@@ -187,8 +187,8 @@ const Counterexample = ({ structure, description, index, msgNotFound, traces }) 
     );
 };
 
-const getLanguageDifferences = (languageDifferences) => {
-    const nonEmptyDifferences = Object.entries(languageDifferences)
+const getLanguageDifferences = (languageDiff) => {
+    const nonEmptyDifferences = Object.entries(languageDiff)
         .map(([key, { missing, extra }]) => {
             const differenceParts = [];
 
@@ -355,7 +355,7 @@ const viewEvalResult = (evaluation) => {
         evaluation.formalizationToSolution.result === "missingOrExtraSymbols") {
         return (
             <IncorrectEvalResult summary="Your formalization is incorrect due to missing or extra symbols.">
-                {getLanguageDifferences(evaluation.languageDifferences)}
+                {getLanguageDifferences(evaluation.languageDiff)}
             </IncorrectEvalResult>
         );
       }

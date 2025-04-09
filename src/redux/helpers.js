@@ -77,7 +77,7 @@ export const parseFormalization = (input, constants, predicates, functions, pars
   };
 
   try {
-    const parser = parserType === 'withPrecedence' ? parseFormulaWithPrecedence : parseFormulaStrict;
+    const parser = parserType === 'strict' ? parseFormulaStrict : parseFormulaWithPrecedence;
     const fvars = parser(input, language, factories).getFreeVariables();
     if (fvars.size > 0) {
       throw ({
