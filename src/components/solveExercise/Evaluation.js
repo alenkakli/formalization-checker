@@ -88,6 +88,14 @@ const FailedEvalResult = () =>
         {msgDiscuss}
     </EvalResult>
 
+const FailedStructureResult = () =>
+    <EvalResult type="danger">
+        <strong>
+            Your formalization is incorrect, but we were unable to automatically find a structure.
+        </strong>
+        {msgDiscuss}
+    </EvalResult>
+
 const IncorrectEvalResult = ({ summary, children }) =>
     <EvalResult type="danger">
         <strong>Your formalization is incorrect.</strong>
@@ -147,7 +155,7 @@ const Structure = ({ subscript, D, iC, iP, iF }) => (<>
 
 const CollapsibleStructure = ({ subscript, structure }) => (
     <details className="mt-2">
-        <summary className="mb-2">Structure</summary>
+        <summary className="mb-2">Structure ℳ{subscript}</summary>
         <Structure subscript={subscript} {...structure} />
     </details>
 );
@@ -169,7 +177,7 @@ const Counterexample = ({ structure, description, index, msgNotFound, traces }) 
         <div className="mb-2">
             <p className="mb-1">
                 {description}{" "}
-                ℳ{subscript} = (𝐷{subscript}, 𝑖{subscript}) where:
+                ℳ{subscript} = (𝐷{subscript}, 𝑖{subscript}):
             </p>
             <Traces 
                 traces={traces} 
@@ -229,6 +237,7 @@ const makeTraces = (traces, domain) => {
         seenEvaluations.add(evaluationString);
 
         switch (evalObj.kind) {
+            case "quant":
             case "universalQuant":
             case "existentialQuant":
                 return (
@@ -241,6 +250,7 @@ const makeTraces = (traces, domain) => {
                     </div>
                 );
             
+            case "connective":
             case "conjunction":
             case "disjunction":
             case "implication":
@@ -261,12 +271,14 @@ const makeTraces = (traces, domain) => {
                 const left = renderEvaluation(evalObj.args[0], seenEvaluations);
                 const right = renderEvaluation(evalObj.args[1], seenEvaluations);
 
-                let equalityString = `${evalObj.args[0].symbol}`;
-                if (evalObj.args[0].kind !== "constant") {
+                let equalityString = evalObj.args[0].kind === "constant" ? `${evalObj.args[0].symbol}` : `${domain[evalObj.args[0].result - 1]}`;
+                if (evalObj.args[0].kind === "functionAplication") {
                     equalityString += `(${domain[evalObj.args[0].result-1]})`
                 }
-                equalityString += `${evalObj.result ? "=" : "!="} ${evalObj.args[1].symbol}`
-                if (evalObj.args[1].kind !== "constant") {
+
+                equalityString += `${evalObj.result ? "=" : "!="} `;
+                equalityString += "" + evalObj.args[1].kind === "constant" ? `${evalObj.args[1].symbol}` : `${domain[evalObj.args[1].result - 1]}`;
+                if (evalObj.args[1].kind === "functionAplication") {
                     equalityString += `(${domain[evalObj.args[1].result-1]})`
                 }
 
@@ -317,7 +329,7 @@ const makeTraces = (traces, domain) => {
 
     let tracePrologue = `∀x ( ${domain.map(value => `x = ${value} `).join(" ∨ ")} )`;
     if (fmbValues.length > 0) {
-        tracePrologue = `${fmbValues.map(fmb => `∃ ${fmb}`).join(" ")} ( ${tracePrologue} )`;
+        tracePrologue = `${fmbValues.map(fmb => `∃ ${fmb}`).join(" ")} ${tracePrologue} `;
     }
 
     const inequalities = [];
@@ -333,17 +345,24 @@ const makeTraces = (traces, domain) => {
 
     return (
         <div className="container mt-3">
-            <p className="mb-0"><b>Your</b> formalization is <b>{traces[0].result.toString()}</b> because</p>
-            <p className="mb-0">{tracePrologue}</p><br /> 
-            <div className="student-trace">
-                {renderEvaluation(traces[0])}
-            </div>
-            <br /> 
-            <p className="mb-0">The <b>correct</b> formalization is <b>{traces[1].result.toString()}</b> because</p>
-            <p className="mb-0">{tracePrologue}</p><br /> 
-            <div className="solution-trace">
-                {renderEvaluation(traces[1])}
-            </div>
+            <details className="mb-3">
+                <summary><b>Your</b> formalization is <b>{traces[0].result.toString()}</b> because</summary>
+                <div className="traceDetails">
+                    <p className="mb-0">{tracePrologue}</p>
+                    <div className="student-trace">
+                        {renderEvaluation(traces[0])}
+                    </div>
+                </div>
+            </details>
+            <details>
+                <summary>The <b>correct</b> formalization is <b>{traces[1].result.toString()}</b> because</summary>
+                <div className="traceDetails">
+                    <p className="mb-0">{tracePrologue}</p>
+                    <div className="solution-trace">
+                        {renderEvaluation(traces[1])}
+                    </div>
+                </div>
+            </details>
             <br />
         </div>
     );
@@ -351,6 +370,11 @@ const makeTraces = (traces, domain) => {
 
 
 const viewEvalResult = (evaluation) => {
+    if (evaluation.solutionToFormalization.structure.error ||
+        evaluation.formalizationToSolution.structure.error) {
+            return <FailedStructureResult />;
+    }
+
     if (evaluation.solutionToFormalization.result === "missingOrExtraSymbols" &&
         evaluation.formalizationToSolution.result === "missingOrExtraSymbols") {
         return (
@@ -420,7 +444,7 @@ const viewEvalResult = (evaluation) => {
                 where the correct formalization is true.`
             }>
                 <Counterexample
-                    description="One such structure is"
+                    description="In such structure"
                     structure={correctImpliesInput.counterexample}
                     traces={correctImpliesInput.traces}
                 />
@@ -437,7 +461,7 @@ const viewEvalResult = (evaluation) => {
                 where the correct formalization is false.`
             }>
                 <Counterexample
-                    description="One such structure is"
+                    description="In such structure"
                     structure={inputImpliesCorrect.counterexample}
                     traces={inputImpliesCorrect.traces}
                 />
@@ -453,9 +477,7 @@ const viewEvalResult = (evaluation) => {
                 and vice versa.`}
         >
             <Counterexample
-                description="Your formalization is true
-                    and the correct formalization is false,
-                    e.g., in structure"
+                description="In structure"
                 structure={inputImpliesCorrect.counterexample}
                 traces={inputImpliesCorrect.traces}
                 index={1}
@@ -464,9 +486,7 @@ const viewEvalResult = (evaluation) => {
                     and the correct formalization is false.`}
             />
             <Counterexample
-                description="Your formalization is false
-                    and the correct formalization is true,
-                    e.g., in structure"
+                description="In structure"
                 structure={correctImpliesInput.counterexample}
                 traces={correctImpliesInput.traces}
                 index={2}

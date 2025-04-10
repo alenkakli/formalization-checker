@@ -111,7 +111,7 @@ export const addExerciseSlice = createSlice({
     functions: '',
     constraint: '',
     id: '',
-    parserType: '',
+    parserType: 'withPrecedence',
     propositions: [{
       proposition: '',
       proposition_id: '',
@@ -209,7 +209,7 @@ export const addExerciseSlice = createSlice({
         state.functions = '';
         state.constraint = '';
         state.id = '';
-        state.parserType = '';
+        state.parserType = 'withPrecedence';
         state.propositions = [{
           proposition: '',
           proposition_id: '',
@@ -232,7 +232,7 @@ export const addExerciseSlice = createSlice({
       state.predicates = ''
       state.functions =  ''
       state.constraint = ''
-      state.parserType = ''
+      state.parserType = 'withPrecedence'
       state.propositions= [{
         "proposition": '',
         "formalizations": [''],
@@ -257,7 +257,7 @@ export const addExerciseSlice = createSlice({
       state.functions = '';
       state.constraint = '';
       state.id = '';
-      state.parserType = '';
+      state.parserType = 'withPrecedence';
       state.propositions = [{
         proposition: '',
         proposition_id: '',
@@ -281,7 +281,7 @@ export const addExerciseSlice = createSlice({
       state.functions = '';
       state.constraint = '';
       state.id = '';
-      state.parserType = '';
+      state.parserType = 'withPrecedence';
       state.propositions = [{
         proposition: '',
         proposition_id: '',
