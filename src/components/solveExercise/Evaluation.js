@@ -345,7 +345,7 @@ const makeTraces = (traces, domainValues) => {
 
     return (
         <div className="container mt-3">
-            <details className="mb-3">
+            <details className="mb-3" open>
                 <summary><b>Your</b> formalization is <b>{traces[0].result.toString()}</b> because</summary>
                 <div className="traceDetails">
                     <p className="mb-0">{tracePrologue}</p>
@@ -354,7 +354,7 @@ const makeTraces = (traces, domainValues) => {
                     </div>
                 </div>
             </details>
-            <details>
+            <details className="mb-3" open>
                 <summary>The <b>correct</b> formalization is <b>{traces[1].result.toString()}</b> because</summary>
                 <div className="traceDetails">
                     <p className="mb-0">{tracePrologue}</p>
