@@ -223,8 +223,8 @@ const getLanguageDifferences = (languageDiff) => {
     return nonEmptyDifferences.length > 0 ? <ul>{nonEmptyDifferences}</ul> : <p>No missing or extra symbols found.</p>;
 };
 
-const makeTraces = (traces, domain) => {
-    domain = domain.map(item => 
+const makeTraces = (traces, domainValues) => {
+    domainValues = domainValues.map(item => 
         item.includes("fmb") ? item.replace(/^fmb_\$i_/, "$") : item
     );
 
@@ -271,15 +271,15 @@ const makeTraces = (traces, domain) => {
                 const left = renderEvaluation(evalObj.args[0], seenEvaluations);
                 const right = renderEvaluation(evalObj.args[1], seenEvaluations);
 
-                let equalityString = evalObj.args[0].kind === "constant" ? `${evalObj.args[0].symbol}` : `${domain[evalObj.args[0].result - 1]}`;
+                let equalityString = evalObj.args[0].kind === "constant" ? `${evalObj.args[0].symbol}` : `${domainValues[evalObj.args[0].result - 1]}`;
                 if (evalObj.args[0].kind === "functionAplication") {
-                    equalityString += `(${domain[evalObj.args[0].result-1]})`
+                    equalityString += `(${domainValues[evalObj.args[0].result-1]})`
                 }
 
                 equalityString += `${evalObj.result ? "=" : "!="} `;
-                equalityString += "" + evalObj.args[1].kind === "constant" ? `${evalObj.args[1].symbol}` : `${domain[evalObj.args[1].result - 1]}`;
+                equalityString += "" + evalObj.args[1].kind === "constant" ? `${evalObj.args[1].symbol}` : `${domainValues[evalObj.args[1].result - 1]}`;
                 if (evalObj.args[1].kind === "functionAplication") {
-                    equalityString += `(${domain[evalObj.args[1].result-1]})`
+                    equalityString += `(${domainValues[evalObj.args[1].result-1]})`
                 }
 
                 return  <span>
@@ -293,7 +293,7 @@ const makeTraces = (traces, domain) => {
                             predicateFunc = <span>{predicateFunc} {renderEvaluation(arg, seenEvaluations)} ∧ </span>;
                         }
                         return (arg.kind === "variable" || arg.kind === "functionApplication")
-                            ? domain[arg.result - 1] 
+                            ? domainValues[arg.result - 1] 
                             : arg.symbol;
                     }).join(", ")})`;
                 
@@ -308,9 +308,9 @@ const makeTraces = (traces, domain) => {
                         functionFunc = <span>{functionFunc} {renderEvaluation(arg, seenEvaluations)} ∧ </span>;
                     }
                     return (arg.kind === "variable" || arg.kind === "functionApplication")
-                        ? domain[arg.result - 1] 
+                        ? domainValues[arg.result - 1] 
                         : arg.symbol;
-                }).join(", ")}) = ${domain[evalObj.result - 1]}`;
+                }).join(", ")}) = ${domainValues[evalObj.result - 1]}`;
                 
                 return  <span>
                             {functionFunc} {functionString}
@@ -325,22 +325,22 @@ const makeTraces = (traces, domain) => {
         }
     };
 
-    const fmbValues = domain.filter(item => item.startsWith("$"));
+    const fmbValues = domainValues.filter(item => item.startsWith("$"));
 
-    let tracePrologue = `∀x ( ${domain.map(value => `x = ${value} `).join(" ∨ ")} )`;
+    let tracePrologue = `∀x ( ${domainValues.map(value => `x = ${value} `).join(" ∨ ")} )`;
     if (fmbValues.length > 0) {
         tracePrologue = `${fmbValues.map(fmb => `∃ ${fmb}`).join(" ")} ${tracePrologue} `;
     }
 
     const inequalities = [];
-    const minInequalities = Math.min(domain.length, 3);
+    const minInequalities = Math.min(domainValues.length, 3);
     for (let i = 0; i < minInequalities; i++) {
         for (let j = i + 1; j < minInequalities; j++) {
-            inequalities.push(`${domain[i]} ≠ ${domain[j]}`);
+            inequalities.push(`${domainValues[i]} ≠ ${domainValues[j]}`);
         }
     }
     if (inequalities.length > 0) {
-        tracePrologue += ` ∧ ( ${inequalities.join(" ∧ ")} ${domain.length > 3 ? "∧ ..." : ""} )`;
+        tracePrologue += ` ∧ ( ${inequalities.join(" ∧ ")} ${domainValues.length > 3 ? "∧ ..." : ""} )`;
     }
 
     return (
@@ -370,11 +370,6 @@ const makeTraces = (traces, domain) => {
 
 
 const viewEvalResult = (evaluation) => {
-    if (evaluation.solutionToFormalization.structure.error ||
-        evaluation.formalizationToSolution.structure.error) {
-            return <FailedStructureResult />;
-    }
-
     if (evaluation.solutionToFormalization.result === "missingOrExtraSymbols" &&
         evaluation.formalizationToSolution.result === "missingOrExtraSymbols") {
         return (
@@ -396,6 +391,11 @@ const viewEvalResult = (evaluation) => {
         return <FailedEvalResult />;
     }
 
+    if ( (evaluation.solutionToFormalization.result !== 'OK' && evaluation.solutionToFormalization.structure.error) ||
+        (evaluation.formalizationToSolution.result !== 'OK' && evaluation.formalizationToSolution.structure.error) ) {
+            return <FailedStructureResult />;
+    }
+
     // FIXME: evaluation.languageConstants is sometimes empty
     // Example: Charles hates no one whom Agatha hates.
     // \a x(-hates(C,x) \limpl -hates(C,x))
@@ -409,11 +409,12 @@ const viewEvalResult = (evaluation) => {
         // description: evaluation.m1,
         traces: evaluation.formalizationToSolution.result !== "OK" ?
             makeTraces([ evaluation.formalizationToSolution.trace.true, evaluation.formalizationToSolution.trace.false ],
-                 Object.keys(evaluation.formalizationToSolution.structure.domain)) : null,
+                 Object.keys(evaluation.formalizationToSolution.structure.iC)) : null,
         counterexample: evaluation.formalizationToSolution.result !== "OK" ?
             makeStructure(
-                evaluation.formalizationToSolution.structure.domain,
-                evaluation.formalizationToSolution.structure.symbols,
+                evaluation.formalizationToSolution.structure.iC,
+                evaluation.formalizationToSolution.structure.iP,
+                evaluation.formalizationToSolution.structure.iF,
                 new Set(evaluation.formalizationToSolution.structure.languageConstants)
             )
             : null
@@ -423,13 +424,12 @@ const viewEvalResult = (evaluation) => {
         // description: evaluation.m2,
         traces: evaluation.solutionToFormalization.result !== "OK" ?
             makeTraces([ evaluation.solutionToFormalization.trace.false, evaluation.solutionToFormalization.trace.true ],
-                 Object.keys(evaluation.solutionToFormalization.structure.domain)
-                ) 
-                : null,
+                 Object.keys(evaluation.solutionToFormalization.structure.iC)) : null,
         counterexample: evaluation.solutionToFormalization.result !== "OK" ?
             makeStructure(
-                evaluation.solutionToFormalization.structure.domain,
-                evaluation.solutionToFormalization.structure.symbols,
+                evaluation.solutionToFormalization.structure.iC,
+                evaluation.solutionToFormalization.structure.iP,
+                evaluation.solutionToFormalization.structure.iF,
                 new Set(evaluation.solutionToFormalization.structure.languageConstants)
             )
             : null

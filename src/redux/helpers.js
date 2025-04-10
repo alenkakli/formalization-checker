@@ -101,15 +101,15 @@ export const parseFormalization = (input, constants, predicates, functions, pars
   }
 }
 
-export const makeStructure = (iCWithUnnamed, iPF, C_L) => (
+export const makeStructure = (iCWithUnnamed, iP, iF, C_L) => (
   !!iCWithUnnamed
   ? {
     D: Array.from(new Set(Object.values(iCWithUnnamed))).sort(),
     iC: Object.fromEntries(
       Object.entries(iCWithUnnamed).filter(([name, _]) => C_L.has(name))
     ),
-    iP: iPF.predicates,
-    iF: iPF.functions,
+    iP: iP,
+    iF: iF,
   }
   : undefined
 );
