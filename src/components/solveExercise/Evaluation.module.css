@@ -1,0 +1,21 @@
+.studentTrace, .solutionTrace {
+  font-weight: bold;
+}
+
+.quantBlock {
+  position: relative;
+  display: inline-block;
+  padding: 0rem 0.5rem;
+  margin-left: 0rem;
+  margin-right: 0rem;
+  text-align: left;
+  border-left: 2px solid #ccc;
+  border-right: 2px solid #ccc;
+  border-radius: 0.5rem;
+  vertical-align: top;
+}
+
+.connectiveBlock {
+  text-indent: -1rem;
+  padding-inline-start: 1rem;
+}

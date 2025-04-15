@@ -8,6 +8,7 @@ import {
     feedbackRating, selectEvaluation, selectFeedbacks
 } from '../../redux/solveExerciseSlice';
 import Feedback from "./Feedback";
+import styles from "./Evaluation.module.css";
 
 function Evaluation({ proposition_id, evaluation, feedbacks, fetchFeedbacks, feedbackRating, status, error }) {
     const [index, setIndex] = useState(-1);
@@ -250,9 +251,9 @@ const renderEvaluation = (structureConstants, evalObj, seenEvaluations = new Set
         case "universalQuant":
         case "existentialQuant":
             return (
-                <div className="quant-block">
+                <div className={styles.quantBlock}>
                     {evalObj.args.map((arg, index) => (
-                        <div key={index} className="connective-block">
+                        <div key={index} className={styles.connectiveBlock}>
                             {renderEvaluation(structureConstants, arg, seenEvaluations)}
                         </div>
                     ))}
@@ -266,7 +267,7 @@ const renderEvaluation = (structureConstants, evalObj, seenEvaluations = new Set
         case "equivalence":
         case "negation":
             return (
-                <span className="connective-inline">
+                <span className={styles.connectiveInline}>
                     {evalObj.args.map((arg, index) => (
                         <React.Fragment key={index}>
                             {index > 0 && " ∧ "}
@@ -351,26 +352,26 @@ const makeTraces = (traces, structureConstants, antecedentLabel = 'Antecedent', 
     return (
         <ul>
             <li>
-            <details className="mb-3" open>
-                <summary><b>{antecedentLabel}</b> formalization is <b>{traces.antecedent.result.toString()}</b> because</summary>
-                <div className="traceDetails">
-                    <p className="mb-0">{tracePrologue}</p>
-                    <div className="student-trace">
-                        {renderEvaluation(structureConstants, traces.antecedent)}
+                <details className="mb-3" open>
+                    <summary><b>{antecedentLabel}</b> formalization is <b>{traces.antecedent.result.toString()}</b> because</summary>
+                    <div>
+                        <p className="mb-0">{tracePrologue}</p>
+                        <div className={styles.studentTrace}>
+                            {renderEvaluation(structureConstants, traces.antecedent)}
+                        </div>
                     </div>
-                </div>
-            </details>
+                </details>
             </li>
             <li>
-            <details className="mb-3" open>
-                <summary><b>{consequentLabel}</b> formalization is <b>{traces.consequent.result.toString()}</b> because</summary>
-                <div className="traceDetails">
-                    <p className="mb-0">{tracePrologue}</p>
-                    <div className="solution-trace">
-                        {renderEvaluation(structureConstants, traces.consequent)}
+                <details className="mb-3" open>
+                    <summary><b>{consequentLabel}</b> formalization is <b>{traces.consequent.result.toString()}</b> because</summary>
+                    <div>
+                        <p className="mb-0">{tracePrologue}</p>
+                        <div className={styles.solutionTrace}>
+                            {renderEvaluation(structureConstants, traces.consequent)}
+                        </div>
                     </div>
-                </div>
-            </details>
+                </details>
             </li>
         </ul>
     );
