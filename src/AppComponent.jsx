@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { Provider } from 'react-redux';
 import ExerciseList from './components/solveExercise/ExerciseList';
-import { SolveExercise } from './components/solveExercise/SolveExercise';
+import { EmbeddedExerciseView, SolveExercise } from './components/solveExercise/SolveExercise';
 import initStore from './redux/store';
 import {
   logInByGithub, setUser, selectUser
@@ -47,8 +47,8 @@ export default function configure(backendUrl) {
     },
     AppComponent: (props) => (
       <div
-        className={`formalization-checker-ZF2r5pOxUp${
-          props.isEdited ? '' : (' ' + styles.viewMode)
+        className={`formalization-checker-ZF2r5pOxUp ${styles.fcEmbedded} ${
+          props.isEdited ? styles.editMode : styles.viewMode
         }`}
       >
         <Provider store={props.instance.store}>
@@ -132,6 +132,7 @@ function AppComponent({ instance, onStateChange, isEdited }) {
           exerciseId={exerciseId}
           onChange={handleChange}
           fetchExercise={() => 0}
+          View={EmbeddedExerciseView}
         />
       }
     </>

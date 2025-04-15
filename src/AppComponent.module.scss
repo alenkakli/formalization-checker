@@ -1,7 +1,14 @@
+.fcEmbedded {
+    margin: 0 -1rem;
+}
+
 .viewMode {
+    details:not(.language), .syntaxHelp {
+        display: none !important;
+    }
     :global {
-        .btn, details {
-            display: none;
+        .btn {
+            display: none !important;
         }
 
         :not(textarea).form-control,
@@ -32,4 +39,16 @@
             padding-bottom: 0;
         }
    }
+}
+
+.editMode {
+    max-height: 90vh;
+    max-height: calc(100vh - 5rem);
+    overflow-y: scroll;
+
+    .stickyHeader {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
 }

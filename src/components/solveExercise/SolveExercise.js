@@ -10,8 +10,9 @@ import {
 } from '../../redux/solveExerciseSlice';
 import { useParams } from 'react-router';
 import {selectUser} from "../../redux/userSlice";
+import appComponentStyles from '../../AppComponent.module.scss';
 
-export const SolveExercise = ({ exerciseId, exercise, status, error, fetchExercise, user, onChange }) => {
+export const SolveExercise = ({ exerciseId, exercise, status, error, fetchExercise, user, onChange, View = ExerciseView }) => {
     useEffect(() => {
         if (status === 'idle') {
             fetchExercise({ exercise_id: exerciseId, username: user });
@@ -33,17 +34,9 @@ export const SolveExercise = ({ exerciseId, exercise, status, error, fetchExerci
             />
         ));
         content = (
-            <div>
-                <h2>{ exercise.title }</h2>
-                <p>{ exercise.description }</p>
-                <h5>Language ℒ</h5>
-                <p>𝒞<sub>ℒ</sub> = {"{ "}{ exercise.constants }{" }"}</p>
-                <p>𝒫<sub>ℒ</sub> = {"{ "}{ exercise.predicates }{" }"}</p>
-                <p>ℱ<sub>ℒ</sub> = {"{ "}{ exercise.functions }{" }"}</p>
-                { acceptedSymbolsView }
-                <h5>Propositions</h5>
-                { propositions_list }
-            </div>
+            <View {...exercise}>
+              { propositions_list }
+            </View>
         );
     } else if (status === 'failed') {
         content = (
@@ -55,6 +48,44 @@ export const SolveExercise = ({ exerciseId, exercise, status, error, fetchExerci
 
     return content;
 }
+
+const ExerciseView = ({title, description, constants, predicates, functions, children}) => (
+    <div>
+        <h2>{ title }</h2>
+        <p>{ description }</p>
+        <h3 class="h5">Language ℒ</h3>
+        <p>𝒞<sub>ℒ</sub> = {"{ "}{ constants }{" }"}</p>
+        <p>𝒫<sub>ℒ</sub> = {"{ "}{ predicates }{" }"}</p>
+        <p>ℱ<sub>ℒ</sub> = {"{ "}{ functions }{" }"}</p>
+        { acceptedSymbolsView("") }
+        <h3>Propositions</h3>
+        { children }
+    </div>
+);
+
+export const EmbeddedExerciseView = ({title, description, constants, predicates, functions, children}) => (
+  <>
+    <div className="px-3">
+      <div className="float-end ms-3 mb-3">
+        <span className="bi bi-info-circle-fill text-secondary" title={title}/>
+      </div>
+      <p>{ description }</p>
+    </div>
+    <div className={`bg-white px-3 pb-2 mb-2 border-bottom ${appComponentStyles.stickyHeader}`}>
+      <details open className={appComponentStyles.language}>
+      <summary className="fs-5"><h3 className="h5">Language ℒ</h3></summary>
+      <p>𝒞<sub>ℒ</sub> = {"{ "}{ constants }{" }"}</p>
+      <p>𝒫<sub>ℒ</sub> = {"{ "}{ predicates }{" }"}</p>
+      <p>ℱ<sub>ℒ</sub> = {"{ "}{ functions }{" }"}</p>
+      </details>
+      { acceptedSymbolsView(`mb-0 ${appComponentStyles.syntaxHelp}`) }
+    </div>
+    <div className="px-3">
+      <h3 className="h5">Propositions</h3>
+      { children }
+    </div>
+  </>
+);
 
 function SolveExercise1(props) {
   const { id } = useParams();
@@ -109,10 +140,10 @@ const acceptedSymbols = [
   },
 ];
 
-const acceptedSymbolsView = (
-  <details className="mb-3">
+const acceptedSymbolsView = (cls) => (
+  <details className={cls}>
     <summary className="h6">Accepted notation of logical symbols</summary>
-    <Table size="sm" striped className="w-auto">
+    <Table size="sm" striped className={`w-auto ${cls}`}>
       <thead>
         <tr>
           <th>Logical symbol</th>
