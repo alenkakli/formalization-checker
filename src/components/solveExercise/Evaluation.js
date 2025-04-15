@@ -281,7 +281,7 @@ const renderEvaluation = (structureConstants, evalObj, seenEvaluations = new Set
             const right = renderEvaluation(structureConstants, evalObj.args[1], seenEvaluations);
 
             let equalityString = evalObj.args[0].kind === "constant" ? `${evalObj.args[0].symbol}` : `${structureConstants[evalObj.args[0].result - 1]}`;
-            equalityString += ` ${evalObj.result ? "=" : "!="} `;
+            equalityString += ` ${evalObj.result ? "=" : "≠"} `;
             equalityString += "" + evalObj.args[1].kind === "constant" ? `${evalObj.args[1].symbol}` : `${structureConstants[evalObj.args[1].result - 1]}`;
 
             return  <span>
@@ -334,7 +334,7 @@ const makeTraces = (traces, structureConstants, antecedentLabel = 'Antecedent', 
 
     let tracePrologue = `∀x ( ${structureConstants.map(value => `x = ${value} `).join(" ∨ ")} )`;
     if (fmbValues.length > 0) {
-        tracePrologue = `${fmbValues.map(fmb => `∃${fmb}`).join(" ")} ${tracePrologue} `;
+        tracePrologue = `${fmbValues.map(fmb => `∃${fmb}`).join(" ")}: ${tracePrologue} `;
     }
 
     const inequalities = [];
@@ -349,7 +349,8 @@ const makeTraces = (traces, structureConstants, antecedentLabel = 'Antecedent', 
     }
 
     return (
-        <div className="ms-4">
+        <ul>
+            <li>
             <details className="mb-3" open>
                 <summary><b>{antecedentLabel}</b> formalization is <b>{traces.antecedent.result.toString()}</b> because</summary>
                 <div className="traceDetails">
@@ -359,6 +360,8 @@ const makeTraces = (traces, structureConstants, antecedentLabel = 'Antecedent', 
                     </div>
                 </div>
             </details>
+            </li>
+            <li>
             <details className="mb-3" open>
                 <summary><b>{consequentLabel}</b> formalization is <b>{traces.consequent.result.toString()}</b> because</summary>
                 <div className="traceDetails">
@@ -368,7 +371,8 @@ const makeTraces = (traces, structureConstants, antecedentLabel = 'Antecedent', 
                     </div>
                 </div>
             </details>
-        </div>
+            </li>
+        </ul>
     );
 };
 
