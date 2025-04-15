@@ -7,11 +7,7 @@ import {
     fetchActiveFeedbacks,
     feedbackRating, selectEvaluation, selectFeedbacks
 } from '../../redux/solveExerciseSlice';
-import {
-    makeStructure
-} from '../../redux/helpers';
 import Feedback from "./Feedback";
-import { EqualityAtom } from '../../redux/formula_classes';
 
 function Evaluation({ proposition_id, evaluation, feedbacks, fetchFeedbacks, feedbackRating, status, error }) {
     const [index, setIndex] = useState(-1);
@@ -178,7 +174,7 @@ const Traces = ({ traces }) => {
 };
 
 
-const Counterexample = ({ structure, description, index, msgNotFound, traceData, inputIsAntecedent }) => {
+const Counterexample = ({ structure, description, index, msgNotFound, traceData, antecedentLabel, consequentLabel }) => {
     if (!structure || !traceData) {
         return (
             <p className="mb-2">
@@ -189,7 +185,7 @@ const Counterexample = ({ structure, description, index, msgNotFound, traceData,
     }
 
     const subscript = index ? <sub>{index}</sub> : null;
-    const traces = makeTraces(traceData, structure.structureConstants, inputIsAntecedent);
+    const traces = makeTraces(traceData, structure.structureConstants, antecedentLabel, consequentLabel);
 
     return traces ? (
         <div className="mb-2">
@@ -241,104 +237,104 @@ const getLanguageDifferences = (languageDiff) => {
     return nonEmptyDifferences.length > 0 ? <ul>{nonEmptyDifferences}</ul> : <p>No missing or extra symbols found.</p>;
 };
 
-const makeTraces = (traces, structureConstants, inputIsAntecedent) => {
-    if (!traces?.antecedent || !traces?.consequent || !structureConstants) return;
+const renderEvaluation = (structureConstants, evalObj, seenEvaluations = new Set()) => {
+    const evaluationString = JSON.stringify(evalObj);
 
-    const renderEvaluation = (evalObj, seenEvaluations = new Set()) => {
-        const evaluationString = JSON.stringify(evalObj);
+    if (seenEvaluations.has(evaluationString)) {
+        return;
+    }
+    seenEvaluations.add(evaluationString);
 
-        if (seenEvaluations.has(evaluationString)) {
-            return;
-        }
-        seenEvaluations.add(evaluationString);
-
-        switch (evalObj.kind) {
-            case "quant":
-            case "universalQuant":
-            case "existentialQuant":
-                return (
-                    <div className="quant-block">
-                        {evalObj.args.map((arg, index) => (
-                            <div key={index} className="connective-block">
-                                {renderEvaluation(arg, seenEvaluations)}
-                            </div>
-                        ))}
-                    </div>
-                );
+    switch (evalObj.kind) {
+        case "quant":
+        case "universalQuant":
+        case "existentialQuant":
+            return (
+                <div className="quant-block">
+                    {evalObj.args.map((arg, index) => (
+                        <div key={index} className="connective-block">
+                            {renderEvaluation(structureConstants, arg, seenEvaluations)}
+                        </div>
+                    ))}
+                </div>
+            );
+        
+        case "connective":
+        case "conjunction":
+        case "disjunction":
+        case "implication":
+        case "equivalence":
+        case "negation":
+            return (
+                <span className="connective-inline">
+                    {evalObj.args.map((arg, index) => (
+                        <React.Fragment key={index}>
+                            {index > 0 && " ∧ "}
+                            {renderEvaluation(structureConstants, arg)}
+                        </React.Fragment>
+                    ))}
+                </span>
+            );
             
-            case "connective":
-            case "conjunction":
-            case "disjunction":
-            case "implication":
-            case "equivalence":
-            case "negation":
-                return (
-                    <span className="connective-inline">
-                        {evalObj.args.map((arg, index) => (
-                            <React.Fragment key={index}>
-                                {index > 0 && " ∧ "}
-                                {renderEvaluation(arg)}
-                            </React.Fragment>
-                        ))}
-                    </span>
-                );
-                
-            case "equality":
-                const left = renderEvaluation(evalObj.args[0], seenEvaluations);
-                const right = renderEvaluation(evalObj.args[1], seenEvaluations);
+        case "equality":
+            const left = renderEvaluation(structureConstants, evalObj.args[0], seenEvaluations);
+            const right = renderEvaluation(structureConstants, evalObj.args[1], seenEvaluations);
 
-                let equalityString = evalObj.args[0].kind === "constant" ? `${evalObj.args[0].symbol}` : `${structureConstants[evalObj.args[0].result - 1]}`;
-                equalityString += ` ${evalObj.result ? "=" : "!="} `;
-                equalityString += "" + evalObj.args[1].kind === "constant" ? `${evalObj.args[1].symbol}` : `${structureConstants[evalObj.args[1].result - 1]}`;
+            let equalityString = evalObj.args[0].kind === "constant" ? `${evalObj.args[0].symbol}` : `${structureConstants[evalObj.args[0].result - 1]}`;
+            equalityString += ` ${evalObj.result ? "=" : "!="} `;
+            equalityString += "" + evalObj.args[1].kind === "constant" ? `${evalObj.args[1].symbol}` : `${structureConstants[evalObj.args[1].result - 1]}`;
 
-                return  <span>
-                            {left}{left && " ∧ "}{right}{right && " ∧ "}{equalityString}
-                        </span>;
+            return  <span>
+                        {left}{left && " ∧ "}{right}{right && " ∧ "}{equalityString}
+                    </span>;
 
-            case "predicate":
-                let predicateFunc;
-                const predicateString = `${evalObj.symbol}(${evalObj.args.map(arg => {
-                        if (arg.kind === "functionApplication") {
-                            predicateFunc = <span>{predicateFunc} {renderEvaluation(arg, seenEvaluations)} ∧ </span>;
-                        }
-                        return (arg.kind === "variable" || arg.kind === "functionApplication")
-                            ? structureConstants[arg.result - 1] 
-                            : arg.symbol;
-                    }).join(", ")})`;
-                
-                return  <span>
-                            {predicateFunc} {evalObj.result ? predicateString : `¬${predicateString}`}
-                        </span>;
-            
-            case "functionApplication":
-                let functionFunc;
-                const functionString = `${evalObj.symbol}(${evalObj.args.map(arg => {
+        case "predicate":
+            let predicateFunc;
+            const predicateString = `${evalObj.symbol}(${evalObj.args.map(arg => {
                     if (arg.kind === "functionApplication") {
-                        functionFunc = <span>{functionFunc} {renderEvaluation(arg, seenEvaluations)} ∧ </span>;
+                        predicateFunc = <span>{predicateFunc} {renderEvaluation(structureConstants, arg, seenEvaluations)} ∧ </span>;
                     }
                     return (arg.kind === "variable" || arg.kind === "functionApplication")
                         ? structureConstants[arg.result - 1] 
                         : arg.symbol;
-                }).join(", ")}) = ${structureConstants[evalObj.result - 1]}`;
-                
-                return  <span>
-                            {functionFunc} {functionString}
-                        </span>;
+                }).join(", ")})`;
+            
+            return  <span>
+                        {predicateFunc} {evalObj.result ? predicateString : `¬${predicateString}`}
+                    </span>;
+        
+        case "functionApplication":
+            let functionFunc;
+            const functionString = `${evalObj.symbol}(${evalObj.args.map(arg => {
+                if (arg.kind === "functionApplication") {
+                    functionFunc = <span>{functionFunc} {renderEvaluation(structureConstants, arg, seenEvaluations)} ∧ </span>;
+                }
+                return (arg.kind === "variable" || arg.kind === "functionApplication")
+                    ? structureConstants[arg.result - 1] 
+                    : arg.symbol;
+            }).join(", ")}) = ${structureConstants[evalObj.result - 1]}`;
+            
+            return  <span>
+                        {functionFunc} {functionString}
+                    </span>;
 
-            case "variable":
-            case "constant":
-                return  null;
+        case "variable":
+        case "constant":
+            return  null;
 
-            default:
-                return null;
-        }
-    };
+        default:
+            return null;
+    }
+};
+
+const makeTraces = (traces, structureConstants, antecedentLabel = 'Antecedent', consequentLabel = 'Consequent') => {
+    if (!traces?.antecedent || !traces?.consequent || !structureConstants) return;
 
     const fmbValues = structureConstants.filter(item => item.startsWith("$"));
 
     let tracePrologue = `∀x ( ${structureConstants.map(value => `x = ${value} `).join(" ∨ ")} )`;
     if (fmbValues.length > 0) {
-        tracePrologue = `${fmbValues.map(fmb => `∃ ${fmb}`).join(" ")} ${tracePrologue} `;
+        tracePrologue = `${fmbValues.map(fmb => `∃${fmb}`).join(" ")} ${tracePrologue} `;
     }
 
     const inequalities = [];
@@ -349,26 +345,26 @@ const makeTraces = (traces, structureConstants, inputIsAntecedent) => {
         }
     }
     if (inequalities.length > 0) {
-        tracePrologue += ` ∧ ( ${inequalities.join(" ∧ ")} ${structureConstants.length > 3 ? "∧ ..." : ""} )`;
+        tracePrologue += ` ∧ ( ${inequalities.join(" ∧ ")} ${structureConstants.length > 3 ? "∧ ..." : ""} ):`;
     }
 
     return (
-        <div className="container mt-3">
+        <div className="ms-4">
             <details className="mb-3" open>
-                <summary><b>{inputIsAntecedent ? 'Your' : 'The correct'}</b> formalization is <b>{traces.antecedent.result.toString()}</b> because</summary>
+                <summary><b>{antecedentLabel}</b> formalization is <b>{traces.antecedent.result.toString()}</b> because</summary>
                 <div className="traceDetails">
                     <p className="mb-0">{tracePrologue}</p>
                     <div className="student-trace">
-                        {renderEvaluation(traces.antecedent)}
+                        {renderEvaluation(structureConstants, traces.antecedent)}
                     </div>
                 </div>
             </details>
             <details className="mb-3" open>
-                <summary><b>{inputIsAntecedent ? 'The correct' : 'Your'}</b> formalization is <b>{traces.consequent.result.toString()}</b> because</summary>
+                <summary><b>{consequentLabel}</b> formalization is <b>{traces.consequent.result.toString()}</b> because</summary>
                 <div className="traceDetails">
                     <p className="mb-0">{tracePrologue}</p>
                     <div className="solution-trace">
-                        {renderEvaluation(traces.consequent)}
+                        {renderEvaluation(structureConstants, traces.consequent)}
                     </div>
                 </div>
             </details>
@@ -430,7 +426,8 @@ const viewEvalResult = (evaluation) => {
                         description="In such structure"
                         structure={correctImpliesInput.counterexample}
                         traceData={correctImpliesInput.traces}
-                        inputIsAntecedent={false}
+                        antecedentLabel={'The correct'}
+                        consequentLabel={'Your'}
                         />
                     : <FailedStructureResult error={correctImpliesInput.counterexample?.error} />
                 }
@@ -452,7 +449,8 @@ const viewEvalResult = (evaluation) => {
                         description="In such structure"
                         structure={inputImpliesCorrect.counterexample}
                         traceData={inputImpliesCorrect.traces}
-                        inputIsAntecedent={true}
+                        antecedentLabel={'Your'}
+                        consequentLabel={'The correct'}
                         />
                     : <FailedStructureResult error={inputImpliesCorrect.counterexample?.error} />
                 }
@@ -473,7 +471,8 @@ const viewEvalResult = (evaluation) => {
                     description="In structure"
                     structure={inputImpliesCorrect.counterexample}
                     traceData={inputImpliesCorrect.traces}
-                    inputIsAntecedent={true}
+                    antecedentLabel={'Your'}
+                    consequentLabel={'The correct'}
                     index={1}
                     msgNotFound={`We could not automatically find a structure
                                 in which your formalization is true
@@ -487,7 +486,8 @@ const viewEvalResult = (evaluation) => {
                     description="In structure"
                     structure={correctImpliesInput.counterexample}
                     traceData={correctImpliesInput.traces}
-                    inputIsAntecedent={false}
+                    antecedentLabel={'The correct'}
+                    consequentLabel={'Your'}
                     index={2}
                     msgNotFound={`We could not automatically find a structure
                         in which your formalization is false
