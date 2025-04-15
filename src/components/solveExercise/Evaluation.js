@@ -288,15 +288,8 @@ const makeTraces = (traces, structureConstants, inputIsAntecedent) => {
                 const right = renderEvaluation(evalObj.args[1], seenEvaluations);
 
                 let equalityString = evalObj.args[0].kind === "constant" ? `${evalObj.args[0].symbol}` : `${structureConstants[evalObj.args[0].result - 1]}`;
-                if (evalObj.args[0].kind === "functionAplication") {
-                    equalityString += `(${structureConstants[evalObj.args[0].result-1]})`
-                }
-
-                equalityString += `${evalObj.result ? "=" : "!="} `;
+                equalityString += ` ${evalObj.result ? "=" : "!="} `;
                 equalityString += "" + evalObj.args[1].kind === "constant" ? `${evalObj.args[1].symbol}` : `${structureConstants[evalObj.args[1].result - 1]}`;
-                if (evalObj.args[1].kind === "functionAplication") {
-                    equalityString += `(${structureConstants[evalObj.args[1].result-1]})`
-                }
 
                 return  <span>
                             {left}{left && " ∧ "}{right}{right && " ∧ "}{equalityString}
