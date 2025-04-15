@@ -82,15 +82,20 @@ const FailedEvalResult = () =>
         <strong>
             We were unable to automatically validate your formalization.
         </strong>
+        The evaluation has timed out or used too much memory.
+        Your formalization is likely incorrect.
         {msgDiscuss}
     </EvalResult>
 
 const UnknownEvaluationResult = () =>
     <EvalResult type="warning">
         <strong>
-            We were unable to automatically validate your formalization due to an unknown evaluation result.
+            The evaluation server returned an unknown result.
         </strong>
-        {msgDiscuss}
+        You may be using an older version of this interface.
+        Try reloading the page.
+        If the problem persists or occurs with other formulas,
+        contact the teachers.
     </EvalResult>
 
 const FailedStructureResult = () =>
@@ -379,6 +384,10 @@ const makeTraces = (traces, structureConstants, antecedentLabel = 'Antecedent', 
 
 
 const viewEvalResult = (evaluation) => {
+    if ( !evaluation.inputImpliesCorrect || !evaluation.correctImpliesInput ) {
+        return <UnknownEvaluationResult />;
+    }
+
     if (evaluation.inputImpliesCorrect.result === "missingOrExtraSymbols" &&
         evaluation.correctImpliesInput.result === "missingOrExtraSymbols") {
         return (

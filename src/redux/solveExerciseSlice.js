@@ -40,7 +40,7 @@ export const evaluate = createAsyncThunk(
       ));
       return response;
     } catch (err) {
-      return rejectWithValue(err.message);
+      return rejectWithValue(err.toString());
     }
   }
 );
