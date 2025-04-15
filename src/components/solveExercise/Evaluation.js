@@ -36,7 +36,7 @@ function Evaluation({ proposition_id, evaluation, feedbacks, fetchFeedbacks, fee
     if (status === 'failed') {
         return (
             <ErrorEvalResult>
-                { error }
+                { ` ${error}` }
             </ErrorEvalResult>
         );
     }
